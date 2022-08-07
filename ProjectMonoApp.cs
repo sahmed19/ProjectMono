@@ -17,6 +17,8 @@ namespace ProjectMono.Core {
         readonly int HORIZONTAL_HASH = string.GetHashCode("MOVE_HORIZONTAL");
         readonly int VERTICAL_HASH = string.GetHashCode("MOVE_VERTICAL");
 
+        public static int TOTAL_FRAME_COUNT {get; private set;}
+
         bool facingLeft;
 
         public ProjectMonoApp()
@@ -29,21 +31,21 @@ namespace ProjectMono.Core {
 
         protected override void Initialize()
         {
-            DebuggerManager.Print("Project Initialized!");
+            DebuggerManager.Print("Project Initialized!", MessageType.SYSTEM);
             base.Initialize();
-            
         }
 
         protected override void LoadContent()
         {
             m_SpriteBatch = new SpriteBatch(GraphicsDevice);
-            DebuggerManager.Print("Content Loaded!");
+            DebuggerManager.Print("Content Loaded!", MessageType.SYSTEM);
 
             m_PochitaSprite = Content.Load<Texture2D>("Sprites/CharacterProfiles/pochita_def");
         }
 
         protected override void Update(GameTime gameTime)
         {
+            TOTAL_FRAME_COUNT++;
             float deltaTime = (float) gameTime.ElapsedGameTime.TotalSeconds;
 
             if (GamePad.GetState(PlayerIndex.One).Buttons.Back == ButtonState.Pressed || Keyboard.GetState().IsKeyDown(Keys.Escape))

@@ -20,7 +20,7 @@ namespace ProjectMono.Input {
         Keys m_PrimaryBinding, m_SecondaryBinding;
         Buttons m_PrimaryGamepadBinding, m_SecondaryGamepadBinding;
         bool m_isBeingPressed, m_wasBeingPressedLastFrame;
-        float m_pressStateElapsedTime=0, m_timeOfLastPress=0, m_timeOfLastRelease=0;
+        float m_pressStateElapsedTime=0, m_timeOfLastPress=0.0f, m_timeOfLastRelease=0.0f;
 
 //constructors
         public InputAction(InputManager inputManager, string name, string description, Keys primaryBinding) : 
@@ -54,11 +54,13 @@ namespace ProjectMono.Input {
             {
                 OnPressed();
                 m_timeOfLastPress=gameTime.CurrentTime();
+                DebuggerManager.Print(Name + " was pressed at " + (float) m_timeOfLastPress, MessageType.INPUT_DEBUG);
             }
             else if(WasReleasedThisFrame)
             {
                 OnReleased();
                 m_timeOfLastRelease=gameTime.CurrentTime();
+                DebuggerManager.Print(Name + " was released at " + (float) m_timeOfLastRelease, MessageType.INPUT_DEBUG);
             } 
             else 
                 m_pressStateElapsedTime += deltaTime;

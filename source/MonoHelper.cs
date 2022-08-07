@@ -3,10 +3,10 @@ using Microsoft.Xna.Framework;
 public static class MonoHelper {
 
     public static float DeltaTime(this GameTime gameTime) { 
-        return gameTime.ElapsedGameTime.Seconds;
+        return (float) gameTime.ElapsedGameTime.TotalSeconds;
     }
     public static float CurrentTime(this GameTime gameTime) { 
-        return gameTime.TotalGameTime.Seconds;
+        return (float) gameTime.TotalGameTime.TotalSeconds;
     }
 
 }
