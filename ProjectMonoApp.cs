@@ -2,6 +2,10 @@
 using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Graphics;
 using Microsoft.Xna.Framework.Input;
+
+using MonoGame.Extended.Tweening;
+using MonoGame.Extended.Entities;
+
 using ProjectMono.Input;
 
 namespace ProjectMono.Core {
@@ -9,9 +13,11 @@ namespace ProjectMono.Core {
     public class ProjectMonoApp : Game
     {
         InputManager m_InputManager;
+        World m_World;
         GraphicsDeviceManager m_Graphics;
         SpriteBatch m_SpriteBatch;
         Texture2D m_PochitaSprite;
+        private readonly Tweener _tweener = new Tweener();
         Vector2 m_PochitaPosition = Vector2.One;
 
         readonly int HORIZONTAL_HASH = string.GetHashCode("MOVE_HORIZONTAL");
@@ -25,6 +31,9 @@ namespace ProjectMono.Core {
         {
             m_Graphics = new GraphicsDeviceManager(this);
             m_InputManager = new InputManager(this);
+            m_World = new WorldBuilder()
+                .Build();
+            
             Content.RootDirectory = "Content";
             IsMouseVisible = true;
         }
@@ -47,6 +56,7 @@ namespace ProjectMono.Core {
         {
             TOTAL_FRAME_COUNT++;
             float deltaTime = (float) gameTime.ElapsedGameTime.TotalSeconds;
+            _tweener.Update(deltaTime);
 
             if (GamePad.GetState(PlayerIndex.One).Buttons.Back == ButtonState.Pressed || Keyboard.GetState().IsKeyDown(Keys.Escape))
                 Exit();
@@ -63,6 +73,7 @@ namespace ProjectMono.Core {
             if(Math.Abs(movementInput.X) > 0)
                 facingLeft = movementInput.X < 0;
 
+            m_World.Update(gameTime);
             base.Update(gameTime);
         }
 
@@ -82,7 +93,7 @@ namespace ProjectMono.Core {
                 0f);
             m_SpriteBatch.End();
 
-
+            m_World.Draw(gameTime);
             base.Draw(gameTime);
         }
     }
