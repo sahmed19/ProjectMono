@@ -44,7 +44,8 @@ namespace ProjectMono.Physics {
             transform.Position += motion.Velocity * deltaTime;
 
             //friction: v *= 1 - ft
-            motion.Velocity *= 1.0f - MathHelper.Clamp(motion.Friction * deltaTime, 0.0f, 1.0f);
+            if(transform.Position.Y <= 100.0f)
+                motion.Velocity.X *= 1.0f - MathHelper.Clamp(motion.Friction * deltaTime, 0.0f, 1.0f);
 
 
         }

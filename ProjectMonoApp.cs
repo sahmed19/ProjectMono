@@ -39,6 +39,7 @@ namespace ProjectMono.Core {
         {
             m_World = new WorldBuilder()
                 .AddSystem(new S_PlayerInput(m_InputManager))
+                .AddSystem(new S_CollisionPhysics())
                 .AddSystem(new S_MotionPhysics())
                 .AddSystem(new S_SpriteRendering(GraphicsDevice))
                 .Build();
@@ -50,7 +51,7 @@ namespace ProjectMono.Core {
 
             pochita.Attach(new C_Transform2(new Vector2(200,100)));
             pochita.Attach(new C_Sprite(pochitaSprite));
-            pochita.Attach(new C_Motion(new Vector2(0, 0), 0).WithFriction(C_Player.FRICTION));
+            pochita.Attach(new C_Motion(new Vector2(0, 0), 0).WithFriction(C_Player.GROUND_FRICTION));
             pochita.Attach(new C_Player());
         }
 
@@ -65,6 +66,12 @@ namespace ProjectMono.Core {
             m_InputManager.Tick(gameTime);
             m_World.Update(gameTime);
             m_InputManager.LateTick();
+            
+            var motion = m_World.GetEntity(m_PochitaID).Get<C_Motion>();
+
+            DebuggerManager.Print(
+                " V: " + motion.Velocity
+                , MessageType.GAMEPLAY_DEBUG);
 
             base.Update(gameTime);
         }

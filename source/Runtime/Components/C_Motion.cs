@@ -8,6 +8,7 @@ namespace ProjectMono.Physics {
         public Vector2 Velocity;
         public float TerminalVelocity = 500.0f;
         public float AngularVelocity;
+        public float GravityInfluence = 1.0f;
 
         public float Friction {get; private set; }
 

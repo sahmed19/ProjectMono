@@ -37,14 +37,19 @@ namespace ProjectMono.Physics {
             C_Motion motion = m_MotionMapper.Get(entityID);
             C_Transform2 transform = m_TransformMapper.Get(entityID);
 
+            var jumpInput = m_InputManager.GetInputAction("JUMP");
+
             float horizontalInput = m_InputManager.GetInputAxis("MOVE_HORIZONTAL");
 
-            motion.TerminalVelocity = C_Player.TOP_SPEED;
-            motion.PendingForces.X += horizontalInput * C_Player.ACCELERATION * deltaTime;
+            motion.GravityInfluence = jumpInput.IsBeingPressed? C_Player.HOLDING_JUMP_GRAV_INFLUENCE : 1.0f;
 
-            if(transform.Position.Y <= 150.0f && m_InputManager.GetInputAction("JUMP").WasPressedThisFrame) {
-                motion.PendingForces.Y += C_Player.JUMP_FORCE;
-                DebuggerManager.Print("Got here");
+            motion.TerminalVelocity = C_Player.TOP_SPEED;
+            motion.PendingForces.Y += C_Player.GRAVITY_FORCE * motion.GravityInfluence;
+
+            if(transform.Position.Y <= 100.0f) {
+                motion.PendingForces.X += horizontalInput * C_Player.ACCELERATION * deltaTime;
+                if(jumpInput.WasPressedThisFrame)
+                    motion.PendingForces.Y += C_Player.JUMP_FORCE;
             }
 
         }
