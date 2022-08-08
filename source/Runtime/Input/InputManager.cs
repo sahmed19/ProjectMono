@@ -47,8 +47,12 @@ namespace ProjectMono.Input {
             GamePadState gamepadState = GamePad.GetState(PlayerIndex.One);
 
             foreach(var InputAction in m_InputActionDictionary.Values)
-                InputAction.Tick(gameTime, keyboardState, gamepadState);
-            
+                InputAction.Tick(gameTime, keyboardState, gamepadState);   
+        }
+
+        public void LateTick() {
+            foreach(var InputAction in m_InputActionDictionary.Values)
+                InputAction.ResetLastFramePressState();  
         }
 
     }

@@ -65,7 +65,9 @@ namespace ProjectMono.Input {
             } 
             else 
                 m_pressStateElapsedTime += deltaTime;
-            
+        }
+
+        public void ResetLastFramePressState() {
             m_wasBeingPressedLastFrame = m_isBeingPressed;
         }
 

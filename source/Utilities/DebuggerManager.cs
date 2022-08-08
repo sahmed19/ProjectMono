@@ -14,12 +14,12 @@ public static class DebuggerManager {
     public static bool DEBUG_MESSAGES_ENABLED = true;
     static MessageType m_EnabledMessageTypes => 
     MessageType.SYSTEM
-    //| MessageType.GAMEPLAY_DEBUG
-    | MessageType.INPUT_DEBUG
+    | MessageType.GAMEPLAY_DEBUG
+    //| MessageType.INPUT_DEBUG
     //| MessageType.AUDIO_DEBUG
     ;
 
-    public static void Print(string message, MessageType messageType) {
+    public static void Print(string message, MessageType messageType = MessageType.SYSTEM) {
         if(!DEBUG_MESSAGES_ENABLED) return;
         if(!m_EnabledMessageTypes.HasFlag(messageType)) return;
         Debug.WriteLine(message);
