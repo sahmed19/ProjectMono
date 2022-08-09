@@ -6,16 +6,13 @@ namespace ProjectMono.Physics {
 
     public class S_MotionPhysics : EntityProcessingSystem
     {
-
         ComponentMapper<C_Transform2> m_Transform2Mapper;
         ComponentMapper<C_Motion> m_MotionMapper;
 
         public S_MotionPhysics() : base(Aspect.All(
             typeof(C_Transform2),
             typeof(C_Motion)))
-        {
-            
-        }
+        { }
 
         public override void Initialize(IComponentMapperService mapperService)
         {
@@ -46,8 +43,7 @@ namespace ProjectMono.Physics {
             //friction: v *= 1 - ft
             if(transform.Position.Y <= 100.0f)
                 motion.Velocity.X *= 1.0f - MathHelper.Clamp(motion.Friction * deltaTime, 0.0f, 1.0f);
-
-
+                
         }
     }
 

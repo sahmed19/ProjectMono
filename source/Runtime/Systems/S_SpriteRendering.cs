@@ -50,7 +50,7 @@ namespace ProjectMono.Graphics {
                     transform.Angle,
                     sprite.GetOrigin(),
                     transform.Scale,
-                    SpriteEffects.None,
+                    sprite.FlipX? SpriteEffects.FlipHorizontally : SpriteEffects.None,
                     0f
                 );
             }

@@ -12,6 +12,7 @@ namespace ProjectMono.Graphics {
     public class C_Sprite {
         public Texture2D Texture;
         public SpriteAnchor Anchor;
+        public bool FlipX;
 
         readonly Vector2[] ANCHOR_NORMALIZED_VECTORS = {
             new Vector2(0, 0),      new Vector2(.5f, 0),        new Vector2(1.0f, 0),
@@ -22,6 +23,7 @@ namespace ProjectMono.Graphics {
         public C_Sprite(Texture2D texture, SpriteAnchor anchor = SpriteAnchor.CENTERED) {
             Texture = texture;
             Anchor = anchor;
+            FlipX = false;
         }
 
         public static implicit operator Texture2D(C_Sprite sprite) => sprite.Texture;
