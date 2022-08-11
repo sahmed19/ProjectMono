@@ -45,7 +45,7 @@ namespace ProjectMono.Core {
                 .AddSystem(new S_SpriteRendering(GraphicsDevice))
                 .Build();
 
-            var pochitaSprite = Content.Load<Texture2D>("Sprites/CharacterProfiles/pochita_def");
+            var pochitaSprite = Content.Load<Texture2D>("graphics/char_profiles/pochita_icon");
             Entity pochita = m_World.CreateEntity();
 
             m_PochitaID = pochita.Id;

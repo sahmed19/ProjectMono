@@ -1,0 +1,58 @@
+{
+	"root": "",
+	"references":
+	[
+
+	],
+	"content":
+	{
+		"graphics.char_profiles":
+		{
+			"path": "graphics/char_profiles/*.png",
+			"recursive": "True",
+			"action": "build",
+			"importer": "TextureImporter",
+			"processor": "TextureProcessor",
+			"processorParam":
+			{
+				"ColorKeyColor": "255,0,255,255",
+				"ColorKeyEnabled": "True",
+				"GenerateMipmaps": "False",
+				"PremultiplyAlpha": "True",
+				"ResizeToPowerOfTwo": "False",
+				"MakeSquare": "False",
+				"TextureFormat": "Color"
+			}
+		},
+		"graphics.maps":
+		{
+			"path": "graphics/maps/*.png",
+			"recursive": "True",
+			"action": "build",
+			"importer": "TextureImporter",
+			"processor": "TextureProcessor",
+			"processorParam":
+			{
+				"ColorKeyColor": "255,0,255,255",
+				"ColorKeyEnabled": "True",
+				"GenerateMipmaps": "False",
+				"PremultiplyAlpha": "True",
+				"ResizeToPowerOfTwo": "False",
+				"MakeSquare": "False",
+				"TextureFormat": "Color"
+			}
+		},
+		"data.tilemaps":
+		{
+			"path": "data/tilemaps/*.tmx",
+			"recursive": "True",
+			"action": "copy"
+		},
+		"data.tilesets":
+		{
+			"path": "data/tilesets/*.tsx",
+			"recursive": "True",
+			"action": "copy"
+		}
+	}
+}

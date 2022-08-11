@@ -30,6 +30,7 @@
 *.ide
 *.ide-shm
 *.ide-wal
+*.mgcb
 ipch/
 obj/
 [Bb]in

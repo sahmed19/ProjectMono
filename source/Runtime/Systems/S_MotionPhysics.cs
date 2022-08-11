@@ -35,7 +35,7 @@ namespace ProjectMono.Physics {
             motion.PendingForces = Vector2.Zero;
 
             //clamp velocity to terminal velocity
-            motion.Velocity.ClampMagnitude(motion.TerminalVelocity);
+            motion.Velocity.X = MathHelper.Clamp(motion.Velocity.X, -motion.TerminalVelocity, motion.TerminalVelocity);
 
             //displacement: d += vt
             transform.Position += motion.Velocity * deltaTime;
