@@ -27,6 +27,10 @@ namespace ProjectMono.Physics {
             C_Transform2 transform = m_Transform2Mapper.Get(entityID);
             C_Motion motion = m_MotionMapper.Get(entityID);
 
+            //friction: v *= 1 - ft
+            if(transform.Position.Y <= 100.0f)
+                motion.Velocity.X *= 1.0f - MathHelper.Clamp(motion.Friction * deltaTime, 0.0f, 1.0f);
+
             //Angle
             transform.Angle += motion.AngularVelocity * deltaTime;
 
@@ -40,9 +44,6 @@ namespace ProjectMono.Physics {
             //displacement: d += vt
             transform.Position += motion.Velocity * deltaTime;
 
-            //friction: v *= 1 - ft
-            if(transform.Position.Y <= 100.0f)
-                motion.Velocity.X *= 1.0f - MathHelper.Clamp(motion.Friction * deltaTime, 0.0f, 1.0f);
                 
         }
     }

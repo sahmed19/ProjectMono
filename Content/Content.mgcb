@@ -12,18 +12,6 @@
 
 #---------------------------------- Content ---------------------------------#
 
-#begin graphics/char_profiles/pochita_icon.png
-/importer:TextureImporter
-/processor:TextureProcessor
-/processorParam:ColorKeyColor=255,0,255,255
-/processorParam:ColorKeyEnabled=True
-/processorParam:GenerateMipmaps=False
-/processorParam:PremultiplyAlpha=True
-/processorParam:ResizeToPowerOfTwo=False
-/processorParam:MakeSquare=False
-/processorParam:TextureFormat=Color
-/build:graphics/char_profiles/pochita_icon.png
-
 #begin graphics/maps/exterior-parallaxBG1.png
 /importer:TextureImporter
 /processor:TextureProcessor
@@ -72,7 +60,13 @@
 /processorParam:TextureFormat=Color
 /build:graphics/maps/parallaxBG-interior2.png
 
-#begin graphics/maps/twilight-tiles.png
+#begin data/tilemaps/ProjectMono_TestMap.tmx
+/copy:data/tilemaps/ProjectMono_TestMap.tmx
+
+#begin data/tilesets/projectmono_twilight-tiles.tsx
+/copy:data/tilesets/projectmono_twilight-tiles.tsx
+
+#begin graphics/characters/pochita_icon.png
 /importer:TextureImporter
 /processor:TextureProcessor
 /processorParam:ColorKeyColor=255,0,255,255
@@ -82,10 +76,28 @@
 /processorParam:ResizeToPowerOfTwo=False
 /processorParam:MakeSquare=False
 /processorParam:TextureFormat=Color
-/build:graphics/maps/twilight-tiles.png
+/build:graphics/characters/pochita_icon.png
 
-#begin data/tilemaps/ProjectMono_TestMap.tmx
-/copy:data/tilemaps/ProjectMono_TestMap.tmx
+#begin graphics/characters/spritesheet_player.png
+/importer:TextureImporter
+/processor:TextureProcessor
+/processorParam:ColorKeyColor=255,0,255,255
+/processorParam:ColorKeyEnabled=True
+/processorParam:GenerateMipmaps=False
+/processorParam:PremultiplyAlpha=True
+/processorParam:ResizeToPowerOfTwo=False
+/processorParam:MakeSquare=False
+/processorParam:TextureFormat=Color
+/build:graphics/characters/spritesheet_player.png
 
-#begin data/tilesets/projectmono_twilight-tiles.tsx
-/copy:data/tilesets/projectmono_twilight-tiles.tsx
+#begin graphics/maps/tileset_twilight_castle.png
+/importer:TextureImporter
+/processor:TextureProcessor
+/processorParam:ColorKeyColor=255,0,255,255
+/processorParam:ColorKeyEnabled=True
+/processorParam:GenerateMipmaps=False
+/processorParam:PremultiplyAlpha=True
+/processorParam:ResizeToPowerOfTwo=False
+/processorParam:MakeSquare=False
+/processorParam:TextureFormat=Color
+/build:graphics/maps/tileset_twilight_castle.png

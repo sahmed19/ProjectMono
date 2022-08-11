@@ -3,11 +3,13 @@ using Microsoft.Xna.Framework.Graphics;
 using Microsoft.Xna.Framework.Input;
 
 using MonoGame.Extended.Entities;
+using MonoGame.Extended;
 
 using ProjectMono.Input;
 using ProjectMono.Physics;
 using ProjectMono.Graphics;
 using ProjectMono.Gameplay;
+using MonoGame.Extended.ViewportAdapters;
 
 namespace ProjectMono.Core {
 
@@ -16,6 +18,9 @@ namespace ProjectMono.Core {
         InputManager m_InputManager;
         World m_World;
         GraphicsDeviceManager m_Graphics;
+        SpriteBatch m_SpriteBatch;
+        OrthographicCamera m_Camera;
+        
 
         public static int TOTAL_FRAME_COUNT {get; private set;}
 
@@ -33,24 +38,30 @@ namespace ProjectMono.Core {
         protected override void Initialize()
         {
             base.Initialize();
+            var viewportAdapter = new BoxingViewportAdapter(Window, GraphicsDevice, 320, 240);
+            m_Camera = new OrthographicCamera(viewportAdapter);
+            m_Camera.Zoom = .5f;
+            m_Camera.Move(Vector2.UnitY * 300);
         }
 
         protected override void LoadContent()
         {
+            m_SpriteBatch = new SpriteBatch(GraphicsDevice);
+
             m_World = new WorldBuilder()
                 .AddSystem(new S_PlayerController(m_InputManager))
                 .AddSystem(new S_Platformer())
                 .AddSystem(new S_MotionPhysics())
                 .AddSystem(new S_CollisionPhysics())
-                .AddSystem(new S_SpriteRendering(GraphicsDevice))
+                .AddSystem(new S_SpriteRendering(m_SpriteBatch))
                 .Build();
 
-            var pochitaSprite = Content.Load<Texture2D>("graphics/char_profiles/pochita_icon");
+            var pochitaSprite = Content.Load<Texture2D>("graphics/characters/spritesheet_player");
             Entity pochita = m_World.CreateEntity();
 
             m_PochitaID = pochita.Id;
 
-            pochita.Attach(new C_Transform2(new Vector2(200,100)));
+            pochita.Attach(new C_Transform2(new Vector2(10,100)));
             pochita.Attach(new C_Sprite(pochitaSprite));
             pochita.Attach(new C_Motion(new Vector2(0, 0)));
             pochita.Attach(new C_PlatformerData());
@@ -68,13 +79,16 @@ namespace ProjectMono.Core {
 
             m_InputManager.Tick(gameTime);
             m_World.Update(gameTime);
-            m_InputManager.LateTick();
             
-            var motion = m_World.GetEntity(m_PochitaID).Get<C_Motion>();
+            if(m_InputManager.GetInputAction("PREV_WEAPON").WasPressedThisFrame) {
+                m_Camera.ZoomOut(.1f);
+            } else if(m_InputManager.GetInputAction("NEXT_WEAPON").WasPressedThisFrame) {
+                m_Camera.ZoomIn(.1f);
+            }
 
-            DebuggerManager.Print(
-                " V: " + motion.Velocity
-                , MessageType.GAMEPLAY_DEBUG);
+            m_InputManager.LateTick();
+
+            
 
             base.Update(gameTime);
         }
@@ -82,7 +96,12 @@ namespace ProjectMono.Core {
         protected override void Draw(GameTime gameTime)
         {
             GraphicsDevice.Clear(Color.Bisque);
+            var transformMatrix = m_Camera.GetViewMatrix();
+            
+            m_SpriteBatch.Begin(transformMatrix: transformMatrix);
             m_World.Draw(gameTime);
+            m_SpriteBatch.End();
+            
             base.Draw(gameTime);
         }
     }

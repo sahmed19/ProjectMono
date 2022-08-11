@@ -9,18 +9,16 @@ namespace ProjectMono.Graphics {
 
     public class S_SpriteRendering : EntityDrawSystem
     {
-        readonly GraphicsDevice m_GraphicsDevice;
         readonly SpriteBatch m_SpriteBatch;
 
         ComponentMapper<C_Transform2> m_Transform2Mapper;
         ComponentMapper<C_Sprite> m_SpriteMapper;
 
-        public S_SpriteRendering(GraphicsDevice graphicsDevice) : base(Aspect.All(
+        public S_SpriteRendering(SpriteBatch spriteBatch) : base(Aspect.All(
             typeof(C_Transform2),
             typeof(C_Sprite)))
         {
-            m_GraphicsDevice = graphicsDevice;
-            m_SpriteBatch = new SpriteBatch(graphicsDevice);
+            m_SpriteBatch = spriteBatch;
         }
 
 
@@ -32,8 +30,6 @@ namespace ProjectMono.Graphics {
 
         public override void Draw(GameTime gameTime)
         {
-            m_SpriteBatch.Begin(samplerState: SamplerState.PointClamp);
-
             foreach (var entity in ActiveEntities)
             {
                 var transform = m_Transform2Mapper.Get(entity);
@@ -45,7 +41,7 @@ namespace ProjectMono.Graphics {
                 m_SpriteBatch.Draw(
                     sprite.Texture,
                     screenspacePosition,
-                    null,
+                    new Rectangle(0, 0, 16, 16),
                     Color.White,
                     transform.Angle,
                     sprite.GetOrigin(),
@@ -54,8 +50,6 @@ namespace ProjectMono.Graphics {
                     0f
                 );
             }
-
-            m_SpriteBatch.End();
         }
 
     }

@@ -6,9 +6,9 @@
 	],
 	"content":
 	{
-		"graphics.char_profiles":
+		"graphics.characters":
 		{
-			"path": "graphics/char_profiles/*.png",
+			"path": "graphics/characters/*.png",
 			"recursive": "True",
 			"action": "build",
 			"importer": "TextureImporter",

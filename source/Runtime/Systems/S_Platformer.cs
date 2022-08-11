@@ -3,7 +3,6 @@ using MonoGame.Extended.Entities;
 using MonoGame.Extended.Entities.Systems;
 
 using ProjectMono.Gameplay;
-using ProjectMono.Input;
 using ProjectMono.Graphics;
 
 namespace ProjectMono.Physics {
@@ -58,10 +57,16 @@ namespace ProjectMono.Physics {
                     motion.PendingForces.Y += data.JumpForce;
                     input.JumpBuffer = false;
                 }
-            }
 
+                motion.Friction = data.GroundFriction;
+            } else {
+                motion.Friction = data.AirFriction;
+            }
+            
             //flip x of sprite
-            sprite.FlipX = motion.Velocity.X > 0.0f;
+            if(System.Math.Abs(motion.Velocity.X) > 0.1f) {
+                sprite.FlipX = motion.Velocity.X > 0.0f;
+            }
 
         }
     }
