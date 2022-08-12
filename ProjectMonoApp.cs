@@ -11,6 +11,9 @@ using ProjectMono.Graphics;
 using ProjectMono.Gameplay;
 using MonoGame.Extended.ViewportAdapters;
 
+using ImGuiNET.XNA;
+using ImGuiNET;
+
 namespace ProjectMono.Core {
 
     public class ProjectMonoApp : Game
@@ -20,6 +23,8 @@ namespace ProjectMono.Core {
         GraphicsDeviceManager m_Graphics;
         SpriteBatch m_SpriteBatch;
         OrthographicCamera m_Camera;
+
+        ImGuiRenderer m_IMGUI;
         
 
         public static int TOTAL_FRAME_COUNT {get; private set;}
@@ -37,11 +42,14 @@ namespace ProjectMono.Core {
 
         protected override void Initialize()
         {
-            base.Initialize();
             var viewportAdapter = new BoxingViewportAdapter(Window, GraphicsDevice, 320, 240);
             m_Camera = new OrthographicCamera(viewportAdapter);
             m_Camera.Zoom = .5f;
             m_Camera.Move(Vector2.UnitY * 300);
+            
+            m_IMGUI = new ImGuiRenderer(this);
+            m_IMGUI.RebuildFontAtlas();
+            base.Initialize();
         }
 
         protected override void LoadContent()
@@ -99,10 +107,20 @@ namespace ProjectMono.Core {
             var transformMatrix = m_Camera.GetViewMatrix();
             
             m_SpriteBatch.Begin(transformMatrix: transformMatrix);
-            m_World.Draw(gameTime);
-            m_SpriteBatch.End();
+            m_IMGUI.BeforeLayout(gameTime);
             
+            m_World.Draw(gameTime);
             base.Draw(gameTime);
+            GUI();
+
+            
+            m_SpriteBatch.End();
+            m_IMGUI.AfterLayout();
+        }
+
+
+        void GUI() {
+            
         }
     }
 
