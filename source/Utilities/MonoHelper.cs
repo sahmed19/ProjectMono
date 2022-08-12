@@ -20,5 +20,19 @@ public static class MonoHelper {
         vector = vector.Normalized() * MathHelper.Min(maxMagnitude, vector.Length());
         return vector;
     }
+
+    public static System.Numerics.Vector2 MonoVec2SysVec(this Microsoft.Xna.Framework.Vector2 vector) {
+        return new System.Numerics.Vector2(
+            vector.X,
+            vector.Y
+        );
+    }
+
+    public static Microsoft.Xna.Framework.Vector2 SysVec2MonoVec(this System.Numerics.Vector2 vector) {
+        return new Microsoft.Xna.Framework.Vector2(
+            vector.X,
+            vector.Y
+        );
+    }
  
 }

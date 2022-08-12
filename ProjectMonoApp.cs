@@ -44,8 +44,7 @@ namespace ProjectMono.Core {
         {
             var viewportAdapter = new BoxingViewportAdapter(Window, GraphicsDevice, 320, 240);
             m_Camera = new OrthographicCamera(viewportAdapter);
-            m_Camera.Zoom = .5f;
-            m_Camera.Move(Vector2.UnitY * 300);
+            m_Camera.Move(new Vector2(-200.0f, 200.0f));
             
             m_IMGUI = new ImGuiRenderer(this);
             m_IMGUI.RebuildFontAtlas();
@@ -106,7 +105,9 @@ namespace ProjectMono.Core {
             GraphicsDevice.Clear(Color.Bisque);
             var transformMatrix = m_Camera.GetViewMatrix();
             
-            m_SpriteBatch.Begin(transformMatrix: transformMatrix);
+            m_SpriteBatch.Begin(
+                transformMatrix: transformMatrix,
+                samplerState: SamplerState.PointClamp);
             m_IMGUI.BeforeLayout(gameTime);
             
             m_World.Draw(gameTime);
@@ -120,7 +121,18 @@ namespace ProjectMono.Core {
 
 
         void GUI() {
-            
+            ImGui.BeginPopup("Camera");
+            {
+                var camPos = m_Camera.Position.MonoVec2SysVec();
+                if(ImGui.DragFloat2("Camera Position", ref camPos, 10))
+                    m_Camera.Position = camPos.SysVec2MonoVec();
+                
+                var zoom = m_Camera.Zoom;
+                if(ImGui.DragFloat("Camera Zoom", ref zoom, .025f, 0.01f, 10.0f)) {
+                    m_Camera.Zoom = zoom;
+                }
+            }
+            ImGui.EndGroup();
         }
     }
 
