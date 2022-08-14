@@ -32,16 +32,21 @@ namespace ProjectMono.Core {
             var transform = m_Transform2Mapper.Get(entityID);
             var targetTransform = m_Transform2Mapper.Get(camera.ID_CameraTarget);
 
+            if(!camera.FollowTarget) return;
+
             Vector2 displacement = targetTransform.Position - transform.Position;
             
+            transform.Position += displacement * deltaTime * (1.0f / camera.TargetAdaptionTime);
+
+            /* COME BACK TO SMOOTHDAMP WHEN IT WORKS
             transform.Position = MonoHelper.SmoothDamp(
                 transform.Position,
                 targetTransform.Position,
                 ref camera.TargetAdaptionVelocity,
                 camera.TargetAdaptionTime,
-                10.0f,
+                100.0f,
                 deltaTime);
-            
+            */
             
         }
     }

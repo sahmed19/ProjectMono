@@ -30,10 +30,10 @@ namespace ProjectMono.Physics {
             C_Motion motion = m_MotionMapper.Get(entityID);
             C_Transform2 transform = m_TransformMapper.Get(entityID);
 
-            if(transform.Position.Y <= 100.0f) {
+            if(transform.Position.Y >= 100.0f) {
                 transform.Position.Y = 100.0f;
-                motion.Velocity.Y = MathHelper.Max(motion.Velocity.Y, 0.0f);
-                motion.PendingForces.Y = MathHelper.Max(motion.PendingForces.Y, 0.0f);
+                motion.Velocity.Y = MathHelper.Min(motion.Velocity.Y, 0.0f);
+                motion.PendingForces.Y = MathHelper.Min(motion.PendingForces.Y, 0.0f);
             }
 
         }

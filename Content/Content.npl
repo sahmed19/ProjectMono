@@ -42,6 +42,14 @@
 				"TextureFormat": "Color"
 			}
 		},
+		"graphics.shaders":
+		{
+			"path": "graphics/shaders/*.fx",
+			"recursive": "True",
+			"action": "build",
+			"importer": "EffectImporter",
+			"processor": "EffectProcessor"
+		},
 		"data.tilemaps":
 		{
 			"path": "data/tilemaps/*.tmx",

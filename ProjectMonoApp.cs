@@ -17,28 +17,27 @@ namespace ProjectMono.Core {
 
     public class ProjectMonoApp : Game
     {
-        
         SpriteBatch m_SpriteBatch;
         ImGuiRenderer m_IMGUI;
         public OrthographicCamera Camera { get; private set; }
         public InputManager InputManager {get; private set; }
         public World World { get; private set; }
-        public GraphicsDeviceManager Graphics {get; private set; }
+        public GraphicsDeviceManager GraphicsDeviceManager {get; private set; }
         
 
         public static int TOTAL_FRAME_COUNT {get; private set;}
 
-        int m_PochitaID;
+        int m_PlayerID;
+
+        Effect effect;
 
         public ProjectMonoApp()
         {
-            Graphics = new GraphicsDeviceManager(this);
+            GraphicsDeviceManager = new GraphicsDeviceManager(this);
             InputManager = new InputManager(this);
+            DebuggerManager.Initialize();
 
-            Graphics.PreferredBackBufferWidth=1280;
-            Graphics.PreferredBackBufferHeight=720;
-            Window.IsBorderless=true;
-            Graphics.ApplyChanges();
+            Settings.Load(this);
             
             Content.RootDirectory = "Content";
             IsMouseVisible = true;
@@ -46,7 +45,7 @@ namespace ProjectMono.Core {
 
         protected override void Initialize()
         {
-            var viewportAdapter = new BoxingViewportAdapter(Window, GraphicsDevice, 320, 240);
+            var viewportAdapter = new BoxingViewportAdapter(Window, GraphicsDevice, 320, 180);
             Camera = new OrthographicCamera(viewportAdapter);
             Camera.Move(new Vector2(-200.0f, 200.0f));
             
@@ -69,19 +68,29 @@ namespace ProjectMono.Core {
                 .AddSystem(new S_SpriteRendering(m_SpriteBatch))
                 .Build();
 
-            var pochitaSprite = Content.Load<Texture2D>("graphics/characters/spritesheet_player");
-            Entity pochita = World.CreateEntity();
+            var playerSprite = Content.Load<Texture2D>("graphics/characters/spritesheet_player");
+            var pochitaSprite = Content.Load<Texture2D>("graphics/characters/pochita_icon");
+            effect = Content.Load<Effect>("graphics/shaders/character");
+
+            Entity player = World.CreateEntity();
             Entity camera = World.CreateEntity();
+            Entity pochita = World.CreateEntity();
 
-            m_PochitaID = pochita.Id;
+            m_PlayerID = player.Id;
 
-            pochita.Attach(new C_Transform2(new Vector2(10,100)));
-            pochita.Attach(new C_Sprite(pochitaSprite, 16, 16));
-            pochita.Attach(new C_Motion(new Vector2(0, 0)));
-            pochita.Attach(new C_PlatformerData());
-            pochita.Attach(new C_PlatformerInput());
-            pochita.Attach(new C_Player());
+            pochita.Attach(new C_Name("Pochita"));
+            pochita.Attach(new C_Sprite(pochitaSprite, 190, 190));
+            pochita.Attach(new C_Transform2(new Vector2(20,100)));
 
+            player.Attach(new C_Name("Player"));
+            player.Attach(new C_Transform2(new Vector2(10,100)));
+            player.Attach(new C_Sprite(playerSprite, 16, 16));
+            player.Attach(new C_Motion(new Vector2(0, 0)));
+            player.Attach(new C_PlatformerData());
+            player.Attach(new C_PlatformerInput());
+            player.Attach(new C_Player());
+
+            camera.Attach(new C_Name("Camera"));
             camera.Attach(new C_Transform2());
             camera.Attach(new C_Camera());
         }
@@ -107,6 +116,8 @@ namespace ProjectMono.Core {
             var transformMatrix = Camera.GetViewMatrix();
             
             m_SpriteBatch.Begin(
+                SpriteSortMode.Immediate,
+                BlendState.AlphaBlend,
                 transformMatrix: transformMatrix,
                 samplerState: SamplerState.PointClamp);
             m_IMGUI.BeforeLayout(gameTime);

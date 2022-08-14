@@ -36,7 +36,6 @@ namespace ProjectMono.Graphics {
                 var sprite = m_SpriteMapper.Get(entity);
 
                 Vector2 screenspacePosition = transform.Position;
-                screenspacePosition.Y = GraphicsDeviceManager.DefaultBackBufferHeight - screenspacePosition.Y;
 
                 m_SpriteBatch.Draw(
                     sprite.Texture,

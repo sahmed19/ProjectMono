@@ -59,6 +59,8 @@ public static class MonoHelper {
         return num8;
     }
 
+    public static string GetEntityName(this World world, int entityID) => world.GetEntity(entityID).Get<C_Name>().Name;
+
     public static Vector2 SmoothDamp (Vector2 current, Vector2 target, ref Vector2 currentVelocity, float smoothTime, float maxSpeed, float deltaTime)
     {
         smoothTime = Math.Max (0.0001f, smoothTime);

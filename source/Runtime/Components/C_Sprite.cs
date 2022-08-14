@@ -1,3 +1,4 @@
+using System;
 using ImGuiNET;
 using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Graphics;
@@ -10,7 +11,7 @@ namespace ProjectMono.Graphics {
         BOTTOM_LEFT,    BOTTOM_CENTER,  BOTTOM_RIGHT
     }
 
-    public class C_Sprite {
+    public class C_Sprite : IGUIDrawable {
         public Texture2D Texture;
         public Rectangle Rectangle = new Rectangle(0, 0, 16, 16);
         public SpriteAnchor Anchor;
@@ -29,13 +30,13 @@ namespace ProjectMono.Graphics {
             new Vector2(0, 1.0f),      new Vector2(.5f, 1.0f),        new Vector2(1.0f, 1.0f),
         };
 
-        public C_Sprite(Texture2D texture, int spriteWidth, int spriteHeight, int frame = 0, SpriteAnchor anchor = SpriteAnchor.CENTERED)
+        public C_Sprite(Texture2D texture, int spriteWidth=0, int spriteHeight=0, int frame = 0, SpriteAnchor anchor = SpriteAnchor.CENTERED)
         {
             Texture = texture;
             Anchor = anchor;
             FlipX = false;
-            m_SpriteWidth = spriteWidth;
-            m_SpriteHeight = spriteHeight;
+            m_SpriteWidth = spriteWidth==0? TotalImageWidth : spriteWidth;
+            m_SpriteHeight = spriteHeight==0? TotalImageHeight : spriteHeight;
             m_Frame = frame;
 
             DebuggerManager.Print("CellX: " + CellCountX);
@@ -67,26 +68,22 @@ namespace ProjectMono.Graphics {
         }
         public void IncrementFrame(int amt) => SetFrame(m_Frame + amt);
 
-        public void GUI_Display_Sprite() {
-            if(ImGui.Begin("Sprite Display")) {
-                ImGui.Text("Source: " + Texture.Name);
-                ImGui.Text("Tex Dimensions: " + TotalImageWidth + "px X " + TotalImageHeight + "px");
-                ImGui.Text("Cell Dimensions: " + CellCountX + " X " + CellCountY);
-                ImGui.Text("Max Frame: " + MaxFrame);
 
-                ImGui.Separator();
-                
-                if(ImGui.DragInt2("Sprite Dimensions", ref m_SpriteWidth, 1, 1, TotalImageWidth)) {
-                    RecalculateRectangle();
-                }
+        public string Label => "Sprite";
+        public void GUI_Draw() {
+            ImGui.Text("Source: " + Texture.Name);
+            ImGui.Text("Tex Dimensions: " + TotalImageWidth + "px X " + TotalImageHeight + "px");
+            ImGui.Text("Cell Dimensions: " + CellCountX + " X " + CellCountY);
+            ImGui.Text("Max Frame: " + MaxFrame);
 
-                //ImGui.Text("Sprite Dimensions: " + m_SpriteWidth + "px X " + m_SpriteHeight + "px");
-                
-                if(ImGui.SliderInt("Current Frame", ref m_Frame, 0, MaxFrame))
-                    RecalculateRectangle();
+            ImGui.Separator();
+            
+            if(ImGui.DragInt2("Sprite Dimensions", ref m_SpriteWidth, 1, 1, TotalImageWidth) ||
+               ImGui.SliderInt("Current Frame", ref m_Frame, 0, MaxFrame))
+                RecalculateRectangle();
 
-                ImGui.End();
-            }
+            ImGui.Checkbox("FlipX", ref FlipX);
+            
         }
 
     }
