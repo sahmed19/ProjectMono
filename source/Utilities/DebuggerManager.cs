@@ -1,5 +1,9 @@
 using System;
 using System.Diagnostics;
+using ImGuiNET;
+using ProjectMono.Core;
+using ProjectMono.Gameplay;
+using ProjectMono.Physics;
 
 [Flags]
 public enum MessageType {
@@ -24,5 +28,75 @@ public static class DebuggerManager {
         if(!m_EnabledMessageTypes.HasFlag(messageType)) return;
         Debug.WriteLine(message);
     }
+
+    #region IMGUI
+
+    static bool CtrlShift =>
+        ImGui.GetIO().KeyCtrl && 
+        ImGui.GetIO().KeyShift;
+
+    static bool Shortcut(ImGuiKey key) => CtrlShift && ImGui.IsKeyDown(key);
+
+    public static void GUI_Debugger(ProjectMonoApp game) {
+        var inputManager = game.InputManager;
+
+        //Submenu
+        string subMenuOpenID="";
+        if(ImGui.BeginMainMenuBar()) {
+            if (ImGui.BeginMenu("Debug"))
+            {
+                if (ImGui.MenuItem("Settings", "Ctrl-Shift-A"))
+                    subMenuOpenID="Settings";
+                if (ImGui.MenuItem("Camera", "Ctrl-Shift-C"))
+                    subMenuOpenID="Camera";
+                ImGui.EndMenu();
+            }
+            ImGui.EndMainMenuBar();
+        }
+
+        if(Shortcut(ImGuiKey.A))
+            subMenuOpenID="Settings";
+        if(Shortcut(ImGuiKey.C)) {
+            subMenuOpenID="Camera";
+        }
+
+        if(subMenuOpenID!="")
+            ImGui.OpenPopup(subMenuOpenID);
+
+        if(ImGui.BeginPopup("Settings"))
+            GUI_Settings(game);
+
+        if(ImGui.BeginPopup("Camera"))
+            GUI_Camera(game);
+    }
+
+    static void GUI_Settings(ProjectMonoApp game) {
+        ImGui.TextColored(new System.Numerics.Vector4(1.0f, 0.2f, 0.2f, 1.0f), "GENERAL SETTINGS");
+        if(ImGui.Button("Close")) ImGui.CloseCurrentPopup();
+        ImGui.EndPopup();
+    }
+
+    static void GUI_Camera(ProjectMonoApp game) {
+        ImGui.TextColored(new System.Numerics.Vector4(1.0f, 0.2f, 0.2f, 1.0f), "CAMERA SETTINGS");
+
+        int cameraID = game.World.GetFirstEntityWithComponent<C_Camera>();
+        var camera = game.World.GetEntity(cameraID).Get<C_Camera>();
+        var cameraTransform = game.World.GetEntity(cameraID).Get<C_Transform2>();
+
+        var camPos = cameraTransform.Position.MonoVec2SysVec();
+        if(ImGui.DragFloat2("Camera Position", ref camPos, 10))
+            cameraTransform.Position = camPos.SysVec2MonoVec();
+
+        var targetPos = game.World.GetEntity(camera.ID_CameraTarget).Get<C_Transform2>().Position.MonoVec2SysVec();
+        if(ImGui.DragFloat2("Target Position", ref targetPos, 10)) {}
+        
+        
+        if(ImGui.Button("Close")) ImGui.CloseCurrentPopup();
+        ImGui.EndPopup();
+    }
+
+
+
+    #endregion
 
 }

@@ -15,5 +15,10 @@ namespace ProjectMono.Physics {
             Angle = angle;
             Scale = scale;
         }
+
+        //IMGUI
+        public static void GUI_Display(C_Transform2 transform2) {
+            
+        }
     }
 }

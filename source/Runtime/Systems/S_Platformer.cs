@@ -44,6 +44,8 @@ namespace ProjectMono.Physics {
             var transform = m_TransformMapper.Get(entityID);
             var sprite = m_SpriteMapper.Get(entityID);
             
+            if(input.JumpBuffer)
+                sprite.IncrementFrame(1);
 
             motion.GravityInfluence = (input.HoldingJump && motion.Velocity.Y > 0.0f)? 
                 data.HoldingJumpGravInfluence : 1.0f;

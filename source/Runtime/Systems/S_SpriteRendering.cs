@@ -41,7 +41,7 @@ namespace ProjectMono.Graphics {
                 m_SpriteBatch.Draw(
                     sprite.Texture,
                     screenspacePosition,
-                    new Rectangle(0, 0, 16, 16),
+                    sprite.Rectangle,
                     Color.White,
                     transform.Angle,
                     sprite.GetOrigin(),

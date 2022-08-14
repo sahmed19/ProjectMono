@@ -1,4 +1,6 @@
+using System;
 using Microsoft.Xna.Framework;
+using MonoGame.Extended.Entities;
 
 public static class MonoHelper {
 
@@ -34,5 +36,71 @@ public static class MonoHelper {
             vector.Y
         );
     }
+
+    public static float SmoothDamp (float current, float target, ref float currentVelocity, float smoothTime, float maxSpeed, float deltaTime)
+    {
+        smoothTime = Math.Max (0.0001f, smoothTime);
+        float num = 2f / smoothTime;
+        float num2 = num * deltaTime;
+        float num3 = 1f / (1f + num2 + 0.48f * num2 * num2 + 0.235f * num2 * num2 * num2);
+        float num4 = current - target;
+        float num5 = target;
+        float num6 = maxSpeed * smoothTime;
+        num4 = Math.Clamp (num4, -num6, num6);
+        target = current - num4;
+        float num7 = (currentVelocity + num * num4) * deltaTime;
+        currentVelocity = (currentVelocity - num * num7) * num3;
+        float num8 = target + (num4 + num7) * num3;
+        if (num5 - current > 0f == num8 > num5)
+        {
+            num8 = num5;
+            currentVelocity = (num8 - num5) / deltaTime;
+        }
+        return num8;
+    }
+
+    public static Vector2 SmoothDamp (Vector2 current, Vector2 target, ref Vector2 currentVelocity, float smoothTime, float maxSpeed, float deltaTime)
+    {
+        smoothTime = Math.Max (0.0001f, smoothTime);
+        float num = 2f / smoothTime;
+        float num2 = num * deltaTime;
+        float num3 = 1f / (1f + num2 + 0.48f * num2 * num2 + 0.235f * num2 * num2 * num2);
+        Vector2 displacement = current - target;
+        Vector2 targPos = target;
+        float maxDistance = maxSpeed * smoothTime;
+        displacement = displacement.ClampMagnitude(maxDistance);
+        target = current - displacement;
+        Vector2 num7 = (currentVelocity + num * displacement) * deltaTime;
+        currentVelocity = (currentVelocity - num * num7) * num3;
+        Vector2 num8 = target + (displacement + num7) * num3;
+        if ((targPos - current).LengthSquared() > 0f == num8.LengthSquared() > targPos.LengthSquared())
+        {
+            num8 = targPos;
+            currentVelocity = (num8 - targPos) / deltaTime;
+        }
+        return num8;
+    }
+
+    public static int GetFirstEntityWithComponent<T>(this World world) where T : class {
+        for(int i = 0; i < world.EntityCount; i++) {
+            if(world.GetEntity(i).Has<T>())
+                return i;
+        }
+        return -1;
+    }
+
+    public static bool TryGetFirstComponent<T>(this World world, out T component) where T : class {
+        int i = GetFirstEntityWithComponent<T>(world);
+        if(i == -1) {
+            component = null;
+            return false;
+        } else {
+            component = world.GetEntity(i).Get<T>();
+            return true;
+        }
+        
+    }
+
+
  
 }

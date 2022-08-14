@@ -12,19 +12,18 @@ using ProjectMono.Gameplay;
 using MonoGame.Extended.ViewportAdapters;
 
 using ImGuiNET.XNA;
-using ImGuiNET;
 
 namespace ProjectMono.Core {
 
     public class ProjectMonoApp : Game
     {
-        InputManager m_InputManager;
-        World m_World;
-        GraphicsDeviceManager m_Graphics;
+        
         SpriteBatch m_SpriteBatch;
-        OrthographicCamera m_Camera;
-
         ImGuiRenderer m_IMGUI;
+        public OrthographicCamera Camera { get; private set; }
+        public InputManager InputManager {get; private set; }
+        public World World { get; private set; }
+        public GraphicsDeviceManager Graphics {get; private set; }
         
 
         public static int TOTAL_FRAME_COUNT {get; private set;}
@@ -33,8 +32,10 @@ namespace ProjectMono.Core {
 
         public ProjectMonoApp()
         {
-            m_Graphics = new GraphicsDeviceManager(this);
-            m_InputManager = new InputManager(this);
+            Graphics = new GraphicsDeviceManager(this);
+            InputManager = new InputManager(this);
+
+            
 
             Content.RootDirectory = "Content";
             IsMouseVisible = true;
@@ -43,8 +44,8 @@ namespace ProjectMono.Core {
         protected override void Initialize()
         {
             var viewportAdapter = new BoxingViewportAdapter(Window, GraphicsDevice, 320, 240);
-            m_Camera = new OrthographicCamera(viewportAdapter);
-            m_Camera.Move(new Vector2(-200.0f, 200.0f));
+            Camera = new OrthographicCamera(viewportAdapter);
+            Camera.Move(new Vector2(-200.0f, 200.0f));
             
             m_IMGUI = new ImGuiRenderer(this);
             m_IMGUI.RebuildFontAtlas();
@@ -55,25 +56,31 @@ namespace ProjectMono.Core {
         {
             m_SpriteBatch = new SpriteBatch(GraphicsDevice);
 
-            m_World = new WorldBuilder()
-                .AddSystem(new S_PlayerController(m_InputManager))
+            World = new WorldBuilder()
+                .AddSystem(new S_PlayerController(InputManager))
                 .AddSystem(new S_Platformer())
                 .AddSystem(new S_MotionPhysics())
                 .AddSystem(new S_CollisionPhysics())
+                .AddSystem(new S_CameraTargeting())
+                .AddSystem(new S_CameraSystem(Camera))
                 .AddSystem(new S_SpriteRendering(m_SpriteBatch))
                 .Build();
 
             var pochitaSprite = Content.Load<Texture2D>("graphics/characters/spritesheet_player");
-            Entity pochita = m_World.CreateEntity();
+            Entity pochita = World.CreateEntity();
+            Entity camera = World.CreateEntity();
 
             m_PochitaID = pochita.Id;
 
             pochita.Attach(new C_Transform2(new Vector2(10,100)));
-            pochita.Attach(new C_Sprite(pochitaSprite));
+            pochita.Attach(new C_Sprite(pochitaSprite, 16, 16));
             pochita.Attach(new C_Motion(new Vector2(0, 0)));
             pochita.Attach(new C_PlatformerData());
             pochita.Attach(new C_PlatformerInput());
             pochita.Attach(new C_Player());
+
+            camera.Attach(new C_Transform2());
+            camera.Attach(new C_Camera());
         }
 
         protected override void Update(GameTime gameTime)
@@ -84,18 +91,9 @@ namespace ProjectMono.Core {
             if (GamePad.GetState(PlayerIndex.One).Buttons.Back == ButtonState.Pressed || Keyboard.GetState().IsKeyDown(Keys.Escape))
                 Exit();
 
-            m_InputManager.Tick(gameTime);
-            m_World.Update(gameTime);
-            
-            if(m_InputManager.GetInputAction("PREV_WEAPON").WasPressedThisFrame) {
-                m_Camera.ZoomOut(.1f);
-            } else if(m_InputManager.GetInputAction("NEXT_WEAPON").WasPressedThisFrame) {
-                m_Camera.ZoomIn(.1f);
-            }
-
-            m_InputManager.LateTick();
-
-            
+            InputManager.Tick(gameTime);
+            World.Update(gameTime);
+            InputManager.LateTick();
 
             base.Update(gameTime);
         }
@@ -103,36 +101,20 @@ namespace ProjectMono.Core {
         protected override void Draw(GameTime gameTime)
         {
             GraphicsDevice.Clear(Color.Bisque);
-            var transformMatrix = m_Camera.GetViewMatrix();
+            var transformMatrix = Camera.GetViewMatrix();
             
             m_SpriteBatch.Begin(
                 transformMatrix: transformMatrix,
                 samplerState: SamplerState.PointClamp);
             m_IMGUI.BeforeLayout(gameTime);
             
-            m_World.Draw(gameTime);
+            World.Draw(gameTime);
             base.Draw(gameTime);
-            GUI();
-
+            
+            DebuggerManager.GUI_Debugger(this);
             
             m_SpriteBatch.End();
             m_IMGUI.AfterLayout();
-        }
-
-
-        void GUI() {
-            ImGui.BeginPopup("Camera");
-            {
-                var camPos = m_Camera.Position.MonoVec2SysVec();
-                if(ImGui.DragFloat2("Camera Position", ref camPos, 10))
-                    m_Camera.Position = camPos.SysVec2MonoVec();
-                
-                var zoom = m_Camera.Zoom;
-                if(ImGui.DragFloat("Camera Zoom", ref zoom, .025f, 0.01f, 10.0f)) {
-                    m_Camera.Zoom = zoom;
-                }
-            }
-            ImGui.EndGroup();
         }
     }
 
