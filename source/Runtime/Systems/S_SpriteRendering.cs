@@ -3,7 +3,7 @@ using Microsoft.Xna.Framework.Graphics;
 using MonoGame.Extended.Entities;
 using MonoGame.Extended.Entities.Systems;
 
-using ProjectMono.Physics;
+using ProjectMono.Core;
 
 namespace ProjectMono.Graphics {
 

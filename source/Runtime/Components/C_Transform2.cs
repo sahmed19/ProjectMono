@@ -1,6 +1,6 @@
 using Microsoft.Xna.Framework;
 
-namespace ProjectMono.Physics {
+namespace ProjectMono.Core {
     public class C_Transform2 {
         public Vector2 Position;
         public Vector2 Scale;
@@ -14,11 +14,6 @@ namespace ProjectMono.Physics {
             Position = position;
             Angle = angle;
             Scale = scale;
-        }
-
-        //IMGUI
-        public static void GUI_Display(C_Transform2 transform2) {
-            
         }
     }
 }

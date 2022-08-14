@@ -1,6 +1,6 @@
 using Microsoft.Xna.Framework;
 
-namespace ProjectMono.Gameplay {
+namespace ProjectMono.Core {
     public class C_Camera
     {
         public int ID_CameraTarget;

@@ -3,6 +3,7 @@ using System.Diagnostics;
 using ImGuiNET;
 using ProjectMono.Core;
 using ProjectMono.Gameplay;
+using ProjectMono.Graphics;
 using ProjectMono.Physics;
 
 [Flags]
@@ -40,6 +41,8 @@ public static class DebuggerManager {
     public static void GUI_Debugger(ProjectMonoApp game) {
         var inputManager = game.InputManager;
 
+        ImGui.ShowDemoWindow();
+
         //Submenu
         string subMenuOpenID="";
         if(ImGui.BeginMainMenuBar()) {
@@ -60,6 +63,10 @@ public static class DebuggerManager {
             subMenuOpenID="Camera";
         }
 
+        if(game.World.TryGetFirstComponent<C_Sprite>(out var sprite)) {
+            sprite.GUI_Display_Sprite();
+        }
+
         if(subMenuOpenID!="")
             ImGui.OpenPopup(subMenuOpenID);
 
@@ -70,9 +77,15 @@ public static class DebuggerManager {
             GUI_Camera(game);
     }
 
+    static int WINDOW_RESOLUTION_X, WINDOW_RESOLUTION_Y;
+
     static void GUI_Settings(ProjectMonoApp game) {
-        ImGui.TextColored(new System.Numerics.Vector4(1.0f, 0.2f, 0.2f, 1.0f), "GENERAL SETTINGS");
-        if(ImGui.Button("Close")) ImGui.CloseCurrentPopup();
+        ImGui.DragInt2("Resolution", ref WINDOW_RESOLUTION_X, WINDOW_RESOLUTION_Y, 320, 1920);
+        
+        if(ImGui.Button("Apply")) {
+            
+        }
+
         ImGui.EndPopup();
     }
 

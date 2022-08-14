@@ -35,8 +35,11 @@ namespace ProjectMono.Core {
             Graphics = new GraphicsDeviceManager(this);
             InputManager = new InputManager(this);
 
+            Graphics.PreferredBackBufferWidth=1280;
+            Graphics.PreferredBackBufferHeight=720;
+            Window.IsBorderless=true;
+            Graphics.ApplyChanges();
             
-
             Content.RootDirectory = "Content";
             IsMouseVisible = true;
         }

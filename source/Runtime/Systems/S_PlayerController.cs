@@ -4,7 +4,6 @@ using MonoGame.Extended.Entities.Systems;
 
 using ProjectMono.Gameplay;
 using ProjectMono.Input;
-using ProjectMono.Graphics;
 
 namespace ProjectMono.Physics {
 

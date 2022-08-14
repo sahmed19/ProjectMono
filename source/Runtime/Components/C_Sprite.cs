@@ -1,3 +1,4 @@
+using ImGuiNET;
 using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Graphics;
 
@@ -20,7 +21,7 @@ namespace ProjectMono.Graphics {
         int TotalImageHeight => Texture.Height;
         int CellCountX => TotalImageWidth / m_SpriteWidth;
         int CellCountY => TotalImageHeight / m_SpriteHeight;
-        int MaxFrame => CellCountX * CellCountY;
+        int MaxFrame => CellCountX * CellCountY - 1;
 
         readonly Vector2[] ANCHOR_NORMALIZED_VECTORS = {
             new Vector2(0, 0),      new Vector2(.5f, 0),        new Vector2(1.0f, 0),
@@ -65,6 +66,28 @@ namespace ProjectMono.Graphics {
             RecalculateRectangle();
         }
         public void IncrementFrame(int amt) => SetFrame(m_Frame + amt);
+
+        public void GUI_Display_Sprite() {
+            if(ImGui.Begin("Sprite Display")) {
+                ImGui.Text("Source: " + Texture.Name);
+                ImGui.Text("Tex Dimensions: " + TotalImageWidth + "px X " + TotalImageHeight + "px");
+                ImGui.Text("Cell Dimensions: " + CellCountX + " X " + CellCountY);
+                ImGui.Text("Max Frame: " + MaxFrame);
+
+                ImGui.Separator();
+                
+                if(ImGui.DragInt2("Sprite Dimensions", ref m_SpriteWidth, 1, 1, TotalImageWidth)) {
+                    RecalculateRectangle();
+                }
+
+                //ImGui.Text("Sprite Dimensions: " + m_SpriteWidth + "px X " + m_SpriteHeight + "px");
+                
+                if(ImGui.SliderInt("Current Frame", ref m_Frame, 0, MaxFrame))
+                    RecalculateRectangle();
+
+                ImGui.End();
+            }
+        }
 
     }
 

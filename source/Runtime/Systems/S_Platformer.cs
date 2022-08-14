@@ -2,10 +2,11 @@ using Microsoft.Xna.Framework;
 using MonoGame.Extended.Entities;
 using MonoGame.Extended.Entities.Systems;
 
-using ProjectMono.Gameplay;
+using ProjectMono.Physics;
+using ProjectMono.Core;
 using ProjectMono.Graphics;
 
-namespace ProjectMono.Physics {
+namespace ProjectMono.Gameplay {
 
     public class S_Platformer : EntityProcessingSystem
     {

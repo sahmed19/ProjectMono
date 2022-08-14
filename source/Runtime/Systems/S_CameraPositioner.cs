@@ -5,7 +5,7 @@ using MonoGame.Extended.Entities.Systems;
 using ProjectMono.Gameplay;
 using MonoGame.Extended;
 
-namespace ProjectMono.Physics {
+namespace ProjectMono.Core {
 
     public class S_CameraSystem : EntityProcessingSystem
     {
