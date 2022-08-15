@@ -1,6 +1,4 @@
-using Microsoft.Xna.Framework;
-using MonoGame.Extended.Entities;
-using MonoGame.Extended.Entities.Systems;
+/* using Microsoft.Xna.Framework;
 
 using ProjectMono.Gameplay;
 using MonoGame.Extended;
@@ -38,7 +36,7 @@ namespace ProjectMono.Core {
             
             transform.Position += displacement * deltaTime * (1.0f / camera.TargetAdaptionTime);
 
-            /* COME BACK TO SMOOTHDAMP WHEN IT WORKS
+            //COME BACK TO SMOOTHDAMP WHEN IT WORKS
             transform.Position = MonoHelper.SmoothDamp(
                 transform.Position,
                 targetTransform.Position,
@@ -46,9 +44,9 @@ namespace ProjectMono.Core {
                 camera.TargetAdaptionTime,
                 100.0f,
                 deltaTime);
-            */
+            
             
         }
     }
 
-}
+} */

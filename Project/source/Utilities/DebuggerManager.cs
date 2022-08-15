@@ -4,7 +4,6 @@ using ImGuiNET;
 using ProjectMono.Core;
 using System.Numerics;
 
-using MonoGame.Extended.Entities;
 using System.Linq;
 using System.Collections.Generic;
 
@@ -169,6 +168,7 @@ public static class DebuggerManager {
     static int SELECTED_ENTITY = 0;
     static void GUI_EntityBrowser(ProjectMonoApp game, ref bool open) {
         ImGui.SetNextWindowSize(new Vector2(500, 440), ImGuiCond.FirstUseEver);
+        /*
         if(ImGui.Begin("Entity Browser", ref open))
         {
             // Left
@@ -224,7 +224,7 @@ public static class DebuggerManager {
             if(ImGui.CollapsingHeader(component.Label))
                 component.GUI_Draw();
             ImGui.Separator();
-        }
+        }*/
     }
 
     #endregion

@@ -1,6 +1,4 @@
-using Microsoft.Xna.Framework;
-using MonoGame.Extended.Entities;
-using MonoGame.Extended.Entities.Systems;
+/* using Microsoft.Xna.Framework;
 using ProjectMono.Core;
 namespace ProjectMono.Physics {
 
@@ -48,4 +46,4 @@ namespace ProjectMono.Physics {
         }
     }
 
-}
+} */

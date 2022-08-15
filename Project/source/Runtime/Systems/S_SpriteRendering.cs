@@ -1,10 +1,6 @@
-using System.Collections.Generic;
-using System.Linq;
+/* using System.Linq;
 using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Graphics;
-using MonoGame.Extended.Entities;
-using MonoGame.Extended.Entities.Systems;
-
 using ProjectMono.Core;
 
 namespace ProjectMono.Graphics {
@@ -59,4 +55,4 @@ namespace ProjectMono.Graphics {
 
     }
 
-}
+} */

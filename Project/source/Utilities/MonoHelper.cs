@@ -1,6 +1,5 @@
 using System;
 using Microsoft.Xna.Framework;
-using MonoGame.Extended.Entities;
 
 public static class MonoHelper {
 
@@ -59,8 +58,6 @@ public static class MonoHelper {
         return num8;
     }
 
-    public static string GetEntityName(this World world, int entityID) => world.GetEntity(entityID).Get<C_Name>().Name;
-
     public static Vector2 SmoothDamp (Vector2 current, Vector2 target, ref Vector2 currentVelocity, float smoothTime, float maxSpeed, float deltaTime)
     {
         smoothTime = Math.Max (0.0001f, smoothTime);
@@ -81,26 +78,6 @@ public static class MonoHelper {
             currentVelocity = (num8 - targPos) / deltaTime;
         }
         return num8;
-    }
-
-    public static int GetFirstEntityWithComponent<T>(this World world) where T : class {
-        for(int i = 0; i < world.EntityCount; i++) {
-            if(world.GetEntity(i).Has<T>())
-                return i;
-        }
-        return -1;
-    }
-
-    public static bool TryGetFirstComponent<T>(this World world, out T component) where T : class {
-        int i = GetFirstEntityWithComponent<T>(world);
-        if(i == -1) {
-            component = null;
-            return false;
-        } else {
-            component = world.GetEntity(i).Get<T>();
-            return true;
-        }
-        
     }
 
 

@@ -1,6 +1,4 @@
-using Microsoft.Xna.Framework;
-using MonoGame.Extended.Entities;
-using MonoGame.Extended.Entities.Systems;
+/* using Microsoft.Xna.Framework;
 
 using ProjectMono.Gameplay;
 using ProjectMono.Input;
@@ -40,4 +38,4 @@ namespace ProjectMono.Physics {
         }
     }
 
-}
+} */

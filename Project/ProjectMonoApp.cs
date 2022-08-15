@@ -3,7 +3,6 @@ using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Graphics;
 using Microsoft.Xna.Framework.Input;
 
-using MonoGame.Extended.Entities;
 using MonoGame.Extended;
 
 using ProjectMono.Input;
@@ -22,7 +21,7 @@ namespace ProjectMono.Core {
         ImGuiRenderer m_IMGUI;
         public OrthographicCamera Camera { get; private set; }
         public InputManager InputManager {get; private set; }
-        public World World { get; private set; }
+        //public World World { get; private set; }
         public GraphicsDeviceManager GraphicsDeviceManager {get; private set; }
         
 
@@ -58,7 +57,7 @@ namespace ProjectMono.Core {
         protected override void LoadContent()
         {
             m_SpriteBatch = new SpriteBatch(GraphicsDevice);
-
+            /*
             World = new WorldBuilder()
                 .AddSystem(new S_PlayerController(InputManager))
                 .AddSystem(new S_Platformer())
@@ -67,34 +66,34 @@ namespace ProjectMono.Core {
                 .AddSystem(new S_CameraTargeting())
                 .AddSystem(new S_CameraSystem(Camera))
                 .AddSystem(new S_SpriteRendering(m_SpriteBatch))
-                .Build();
+                .Build();*/
 
             var playerSprite = Content.Load<Texture2D>("graphics/characters/spritesheet_player");
             var pochitaSprite = Content.Load<Texture2D>("graphics/characters/pochita_icon");
             effect = Content.Load<Effect>("graphics/shaders/character");
 
-            Entity player = World.CreateEntity();
-            Entity camera = World.CreateEntity();
+            //Entity player = World.CreateEntity();
+            //Entity camera = World.CreateEntity();
 
-            m_PlayerID = player.Id;
+            //m_PlayerID = player.Id;
 
             Random random = new Random();
 
             for(int i = 0; i < 100; i++) {
-                Entity pochita = World.CreateEntity();
-                pochita.Attach(new C_Name("Pochita " + i));
+                //Entity pochita = World.CreateEntity();
+                //pochita.Attach(new C_Name("Pochita " + i));
 
                 Vector2 position = new Vector2(
                     MathHelper.Lerp(-10.0f, 10.0f, (float) random.NextDouble()),
                     MathHelper.Lerp(-10.0f, 10.0f, (float) random.NextDouble()));
 
                 random.NextUnitVector(out var velocity);
-
+                /*
                 pochita.Attach(new C_Transform2(position, 0.0f, Vector2.One * .1f));
                 pochita.Attach(new C_Motion(velocity));
-                pochita.Attach(new C_Sprite(pochitaSprite, spriteWidth: 190, spriteHeight: 190));
+                pochita.Attach(new C_Sprite(pochitaSprite, spriteWidth: 190, spriteHeight: 190));*/
             }
-
+            /*
             player.Attach(new C_Name("Player"));
             player.Attach(new C_Transform2(new Vector2(1,10)));
             player.Attach(new C_Sprite(playerSprite, spriteWidth: 16, spriteHeight: 16, orderInLayer: 50));
@@ -105,7 +104,7 @@ namespace ProjectMono.Core {
 
             camera.Attach(new C_Name("Camera"));
             camera.Attach(new C_Transform2());
-            camera.Attach(new C_Camera());
+            camera.Attach(new C_Camera());*/
         }
 
         protected override void Update(GameTime gameTime)
@@ -117,7 +116,7 @@ namespace ProjectMono.Core {
                 Exit();
 
             InputManager.Tick(gameTime);
-            World.Update(gameTime);
+            //World.Update(gameTime);
             InputManager.LateTick();
 
             base.Update(gameTime);
@@ -135,7 +134,7 @@ namespace ProjectMono.Core {
                 samplerState: SamplerState.PointWrap);
             m_IMGUI.BeforeLayout(gameTime);
             
-            World.Draw(gameTime);
+            //World.Draw(gameTime);
             base.Draw(gameTime);
             
             DebuggerManager.GUI_Debugger(this);

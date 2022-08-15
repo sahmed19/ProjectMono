@@ -1,13 +1,11 @@
 using Microsoft.Xna.Framework;
-using MonoGame.Extended.Entities;
-using MonoGame.Extended.Entities.Systems;
 
 using ProjectMono.Gameplay;
 using MonoGame.Extended;
 
 namespace ProjectMono.Core {
 
-    public class S_CameraSystem : EntityProcessingSystem
+    /* public class S_CameraSystem : EntityProcessingSystem
     {
         ComponentMapper<C_Camera> m_CameraMapper;
         ComponentMapper<C_Transform2> m_Transform2Mapper;
@@ -40,6 +38,6 @@ namespace ProjectMono.Core {
             m_Camera.Rotation = transform.Angle;
             
         }
-    }
+    } */
 
 }
