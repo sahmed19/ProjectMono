@@ -11,6 +11,7 @@ using ProjectMono.Graphics;
 using ProjectMono.Gameplay;
 using MonoGame.Extended.ViewportAdapters;
 
+using Flecs;
 using ImGuiNET.XNA;
 
 namespace ProjectMono.Core {
@@ -21,13 +22,13 @@ namespace ProjectMono.Core {
         ImGuiRenderer m_IMGUI;
         public OrthographicCamera Camera { get; private set; }
         public InputManager InputManager {get; private set; }
-        //public World World { get; private set; }
+        public World World { get; private set; }
         public GraphicsDeviceManager GraphicsDeviceManager {get; private set; }
         
 
         public static int TOTAL_FRAME_COUNT {get; private set;}
 
-        int m_PlayerID;
+        //int m_PlayerID;
 
         Effect effect;
 
@@ -57,25 +58,16 @@ namespace ProjectMono.Core {
         protected override void LoadContent()
         {
             m_SpriteBatch = new SpriteBatch(GraphicsDevice);
-            /*
-            World = new WorldBuilder()
-                .AddSystem(new S_PlayerController(InputManager))
-                .AddSystem(new S_Platformer())
-                .AddSystem(new S_MotionPhysics())
-                .AddSystem(new S_CollisionPhysics())
-                .AddSystem(new S_CameraTargeting())
-                .AddSystem(new S_CameraSystem(Camera))
-                .AddSystem(new S_SpriteRendering(m_SpriteBatch))
-                .Build();*/
+            World = new World(new string[]{""});
 
             var playerSprite = Content.Load<Texture2D>("graphics/characters/spritesheet_player");
             var pochitaSprite = Content.Load<Texture2D>("graphics/characters/pochita_icon");
             effect = Content.Load<Effect>("graphics/shaders/character");
 
-            //Entity player = World.CreateEntity();
-            //Entity camera = World.CreateEntity();
+            var player = World.CreateEntity("Player");
+            var camera = World.CreateEntity("Camera");
 
-            //m_PlayerID = player.Id;
+            m_PlayerID = player;
 
             Random random = new Random();
 
