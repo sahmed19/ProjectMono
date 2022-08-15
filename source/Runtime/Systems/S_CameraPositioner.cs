@@ -32,7 +32,7 @@ namespace ProjectMono.Core {
             var transform = m_Transform2Mapper.Get(entityID);
             
             m_Camera.Zoom = camera.Zoom;
-            m_Camera.Position = transform.Position + new Vector2(-260.0f, -120.0f);
+            m_Camera.Position = (transform.Position - new Vector2(10.0f, 5.0f)) * WorldData.PIXELS_PER_UNIT;
             m_Camera.Position = new Vector2(
                 (int) m_Camera.Position.X,
                 (int) m_Camera.Position.Y

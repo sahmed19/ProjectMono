@@ -1,3 +1,5 @@
+using System.Collections.Generic;
+using System.Linq;
 using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Graphics;
 using MonoGame.Extended.Entities;
@@ -30,12 +32,16 @@ namespace ProjectMono.Graphics {
 
         public override void Draw(GameTime gameTime)
         {
-            foreach (var entity in ActiveEntities)
+            var orderedBySpriteLayer = ActiveEntities
+                .OrderBy(x => m_SpriteMapper.Get(x).Layer)
+                .ThenBy(x => m_SpriteMapper.Get(x).OrderInLayer);
+
+            foreach (var entity in orderedBySpriteLayer)
             {
                 var transform = m_Transform2Mapper.Get(entity);
                 var sprite = m_SpriteMapper.Get(entity);
 
-                Vector2 screenspacePosition = transform.Position;
+                Vector2 screenspacePosition = transform.Position * WorldData.PIXELS_PER_UNIT;
 
                 m_SpriteBatch.Draw(
                     sprite.Texture,

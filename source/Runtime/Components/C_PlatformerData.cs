@@ -3,7 +3,7 @@ using ImGuiNET;
 namespace ProjectMono.Gameplay {
     public class C_PlatformerData : IGUIDrawable
     {
-        public float Acceleration = 950000.0f;
+        public float MoveForce = 950000.0f;
         public float TopSpeed = 100.0f;
         public float JumpForce = -25000.0f;
         public float GravityForce = 3500.0f;
@@ -18,13 +18,13 @@ namespace ProjectMono.Gameplay {
 
         public void GUI_Draw()
         {
-            ImGui.SliderFloat("Acceleration", ref Acceleration, 0.0f, 999999.0f);
-            ImGui.SliderFloat("Top Speed", ref TopSpeed, 0.0f, 200.0f);
-            ImGui.SliderFloat("Jump Force", ref JumpForce, 0.0f, 99999.0f);
-            ImGui.SliderFloat("Gravity Force", ref GravityForce, -9999f, 0.0f);
-            ImGui.SliderFloat("Ground Friction", ref GroundFriction, 0.0f, 999.0f);
-            ImGui.SliderFloat("Air Friction", ref AirFriction, 0.0f, 999.0f);
-            ImGui.SliderFloat("Holding Jump Gravity Influence", ref HoldingJumpGravInfluence, 0.0f, 1.0f);
+            ImGui.DragFloat("Acceleration",                         ref MoveForce,                      1.0f);
+            ImGui.DragFloat("Top Speed",                            ref TopSpeed,                       1.0f);
+            ImGui.DragFloat("Jump Force",                           ref JumpForce,                      1.0f);
+            ImGui.DragFloat("Gravity Force",                        ref GravityForce,                   1.0f);
+            ImGui.DragFloat("Ground Friction",                      ref GroundFriction,                 1.0f);
+            ImGui.DragFloat("Air Friction",                         ref AirFriction,                    1.0f);
+            ImGui.DragFloat("Holding Jump Gravity Influence",       ref HoldingJumpGravInfluence,       1.0f);
         }
 
     }

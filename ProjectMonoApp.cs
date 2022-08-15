@@ -1,4 +1,5 @@
-﻿using Microsoft.Xna.Framework;
+﻿using System;
+using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Graphics;
 using Microsoft.Xna.Framework.Input;
 
@@ -74,18 +75,30 @@ namespace ProjectMono.Core {
 
             Entity player = World.CreateEntity();
             Entity camera = World.CreateEntity();
-            Entity pochita = World.CreateEntity();
 
             m_PlayerID = player.Id;
 
-            pochita.Attach(new C_Name("Pochita"));
-            pochita.Attach(new C_Sprite(pochitaSprite, 190, 190));
-            pochita.Attach(new C_Transform2(new Vector2(20,100)));
+            Random random = new Random();
+
+            for(int i = 0; i < 100; i++) {
+                Entity pochita = World.CreateEntity();
+                pochita.Attach(new C_Name("Pochita " + i));
+
+                Vector2 position = new Vector2(
+                    MathHelper.Lerp(-10.0f, 10.0f, (float) random.NextDouble()),
+                    MathHelper.Lerp(-10.0f, 10.0f, (float) random.NextDouble()));
+
+                random.NextUnitVector(out var velocity);
+
+                pochita.Attach(new C_Transform2(position, 0.0f, Vector2.One * .1f));
+                pochita.Attach(new C_Motion(velocity));
+                pochita.Attach(new C_Sprite(pochitaSprite, spriteWidth: 190, spriteHeight: 190));
+            }
 
             player.Attach(new C_Name("Player"));
-            player.Attach(new C_Transform2(new Vector2(10,100)));
-            player.Attach(new C_Sprite(playerSprite, 16, 16));
-            player.Attach(new C_Motion(new Vector2(0, 0)));
+            player.Attach(new C_Transform2(new Vector2(1,10)));
+            player.Attach(new C_Sprite(playerSprite, spriteWidth: 16, spriteHeight: 16, orderInLayer: 50));
+            player.Attach(new C_Motion(new Vector2(0, 0), mass: 50));
             player.Attach(new C_PlatformerData());
             player.Attach(new C_PlatformerInput());
             player.Attach(new C_Player());
@@ -119,7 +132,7 @@ namespace ProjectMono.Core {
                 SpriteSortMode.Immediate,
                 BlendState.AlphaBlend,
                 transformMatrix: transformMatrix,
-                samplerState: SamplerState.PointClamp);
+                samplerState: SamplerState.PointWrap);
             m_IMGUI.BeforeLayout(gameTime);
             
             World.Draw(gameTime);

@@ -13,7 +13,7 @@ namespace ProjectMono.Core {
         public C_Camera()
         {
             Zoom = 1.0f;
-            TargetAdaptionTime = .3f;
+            TargetAdaptionTime = .5f;
             FollowTarget = true;
         }
 

@@ -173,6 +173,14 @@ public static class DebuggerManager {
         {
             // Left
             {
+                //Navigate selection with up and down
+                if(ImGui.IsKeyDown(ImGuiKey.DownArrow))
+                    SELECTED_ENTITY++;
+                else if(ImGui.IsKeyDown(ImGuiKey.UpArrow))
+                    SELECTED_ENTITY--;
+                SELECTED_ENTITY = Math.Clamp(SELECTED_ENTITY, 0, game.World.EntityCount-1);
+                //-----
+
                 ImGui.BeginChild("left pane", new Vector2(150, 0), true);
                 for (int i = 0; i < game.World.EntityCount; i++)
                 {
@@ -185,7 +193,8 @@ public static class DebuggerManager {
             }
             ImGui.SameLine();
             // Right
-            {
+            {   
+
                 ImGui.BeginGroup();
                 ImGui.BeginChild("item view", new Vector2(0, -ImGui.GetFrameHeightWithSpacing())); // Leave room for 1 line below us
                 ImGui.Text(game.World.GetEntityName(SELECTED_ENTITY));

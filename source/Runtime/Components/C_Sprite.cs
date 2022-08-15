@@ -10,13 +10,22 @@ namespace ProjectMono.Graphics {
         CENTER_LEFT,    CENTERED,       CENTER_RIGHT,
         BOTTOM_LEFT,    BOTTOM_CENTER,  BOTTOM_RIGHT
     }
+    public enum SpriteLayer {
+        UI,
+        FOREGROUND,
+        CHARACTER,
+        TILEMAP,
+        BACKDROP_NEAR,
+        BACKDROP_FAR
+    }
 
     public class C_Sprite : IGUIDrawable {
         public Texture2D Texture;
         public Rectangle Rectangle = new Rectangle(0, 0, 16, 16);
         public SpriteAnchor Anchor;
+        public SpriteLayer Layer;
+        public int OrderInLayer;
         public bool FlipX;
-
         int m_SpriteWidth, m_SpriteHeight, m_Frame;
         int TotalImageWidth => Texture.Width;
         int TotalImageHeight => Texture.Height;
@@ -30,17 +39,17 @@ namespace ProjectMono.Graphics {
             new Vector2(0, 1.0f),      new Vector2(.5f, 1.0f),        new Vector2(1.0f, 1.0f),
         };
 
-        public C_Sprite(Texture2D texture, int spriteWidth=0, int spriteHeight=0, int frame = 0, SpriteAnchor anchor = SpriteAnchor.CENTERED)
+        public C_Sprite(Texture2D texture, int spriteWidth=0, int spriteHeight=0, int frame = 0, SpriteAnchor anchor = SpriteAnchor.CENTERED, SpriteLayer layer = SpriteLayer.CHARACTER, int orderInLayer = 0)
         {
             Texture = texture;
             Anchor = anchor;
             FlipX = false;
+            Layer = layer;
+            OrderInLayer=orderInLayer;
             m_SpriteWidth = spriteWidth==0? TotalImageWidth : spriteWidth;
             m_SpriteHeight = spriteHeight==0? TotalImageHeight : spriteHeight;
             m_Frame = frame;
-
-            DebuggerManager.Print("CellX: " + CellCountX);
-            DebuggerManager.Print("CellY: " + CellCountY);
+            RecalculateRectangle();
         }
 
         public static implicit operator Texture2D(C_Sprite sprite) => sprite.Texture;
@@ -48,8 +57,8 @@ namespace ProjectMono.Graphics {
         public Vector2 GetOrigin()
         {
             Vector2 res = ANCHOR_NORMALIZED_VECTORS[(int) Anchor];
-            res.X *= (float) Texture.Width;
-            res.Y *= (float) Texture.Height;
+            res.X *= (float) m_SpriteWidth;
+            res.Y *= (float) m_SpriteHeight;
             return res;
         }
         void RecalculateRectangle() {
@@ -71,6 +80,7 @@ namespace ProjectMono.Graphics {
 
         public string Label => "Sprite";
         public void GUI_Draw() {
+            ImGui.Text("##Texture Info");
             ImGui.Text("Source: " + Texture.Name);
             ImGui.Text("Tex Dimensions: " + TotalImageWidth + "px X " + TotalImageHeight + "px");
             ImGui.Text("Cell Dimensions: " + CellCountX + " X " + CellCountY);
@@ -83,6 +93,26 @@ namespace ProjectMono.Graphics {
                 RecalculateRectangle();
 
             ImGui.Checkbox("FlipX", ref FlipX);
+
+            ImGui.Separator();
+
+            ImGui.Text("##Sprite Layering");
+            //SELECT Sprite Layer
+            if (ImGui.Button("Sprite Layer: " + Layer.ToString()))
+                ImGui.OpenPopup("sprite_layer");
+                
+            if(ImGui.BeginPopup("sprite_layer"))
+            {
+                ImGui.Text("Sprite Layer");
+                ImGui.Separator();
+                for (int i = 0; i < 6; i++)
+                    if (ImGui.Selectable(((SpriteLayer) i).ToString())) {
+                        Layer = (SpriteLayer) i;
+                    }
+                ImGui.EndPopup();
+            }
+
+            ImGui.DragInt("Sprite Order in Layer", ref OrderInLayer);
             
         }
 

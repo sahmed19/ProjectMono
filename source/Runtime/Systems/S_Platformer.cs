@@ -10,7 +10,7 @@ namespace ProjectMono.Gameplay {
 
     public class S_Platformer : EntityProcessingSystem
     {
-        ComponentMapper<C_PlatformerData> m_PlayerDataMapper;
+        ComponentMapper<C_PlatformerData> m_PlatformerDataMapper;
         ComponentMapper<C_PlatformerInput> m_PlayerInputMapper;
         ComponentMapper<C_Sprite> m_SpriteMapper;
         ComponentMapper<C_Motion> m_MotionMapper;
@@ -28,7 +28,7 @@ namespace ProjectMono.Gameplay {
 
         public override void Initialize(IComponentMapperService mapperService)
         {
-            m_PlayerDataMapper = mapperService.GetMapper<C_PlatformerData>();
+            m_PlatformerDataMapper = mapperService.GetMapper<C_PlatformerData>();
             m_PlayerInputMapper = mapperService.GetMapper<C_PlatformerInput>();
             m_MotionMapper = mapperService.GetMapper<C_Motion>();
             m_TransformMapper = mapperService.GetMapper<C_Transform2>();
@@ -40,19 +40,19 @@ namespace ProjectMono.Gameplay {
             float deltaTime = gameTime.DeltaTime();
             
             var input = m_PlayerInputMapper.Get(entityID);
-            var data = m_PlayerDataMapper.Get(entityID);
+            var data = m_PlatformerDataMapper.Get(entityID);
             var motion = m_MotionMapper.Get(entityID);
             var transform = m_TransformMapper.Get(entityID);
             var sprite = m_SpriteMapper.Get(entityID);
 
-            motion.GravityInfluence = (input.HoldingJump && motion.Velocity.Y > 0.0f)? 
+            var gravityInfluence = (input.HoldingJump && motion.Velocity.Y < 0.0f)? 
                 data.HoldingJumpGravInfluence : 1.0f;
 
             motion.TerminalVelocity = data.TopSpeed;
-            motion.PendingForces.Y += data.GravityForce * motion.GravityInfluence;
+            motion.PendingForces.Y += data.GravityForce * gravityInfluence;
 
-            if(transform.Position.Y >= 100.0f) {
-                motion.PendingForces.X += input.HorizontalInput * data.Acceleration * deltaTime;
+            if(transform.Position.Y >= 10.0f) {
+                motion.PendingForces.X += input.HorizontalInput * data.MoveForce * deltaTime;
                 if(input.JumpBuffer) {
                     motion.PendingForces.Y += data.JumpForce;
                     input.JumpBuffer = false;

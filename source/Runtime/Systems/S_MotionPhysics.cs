@@ -34,8 +34,8 @@ namespace ProjectMono.Physics {
             //Angle
             transform.Angle += motion.AngularVelocity * deltaTime;
 
-            //velocity: v += at
-            motion.Velocity += motion.PendingForces * deltaTime;
+            //velocity: v += f * t / m
+            motion.Velocity += (motion.PendingForces / motion.Mass) * deltaTime;
             motion.PendingForces = Vector2.Zero;
 
             //clamp velocity to terminal velocity
