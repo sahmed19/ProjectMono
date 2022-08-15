@@ -174,9 +174,9 @@ public static class DebuggerManager {
             // Left
             {
                 //Navigate selection with up and down
-                if(ImGui.IsKeyDown(ImGuiKey.DownArrow))
+                if(ImGui.IsKeyPressed(ImGuiKey.DownArrow))
                     SELECTED_ENTITY++;
-                else if(ImGui.IsKeyDown(ImGuiKey.UpArrow))
+                else if(ImGui.IsKeyPressed(ImGuiKey.UpArrow))
                     SELECTED_ENTITY--;
                 SELECTED_ENTITY = Math.Clamp(SELECTED_ENTITY, 0, game.World.EntityCount-1);
                 //-----

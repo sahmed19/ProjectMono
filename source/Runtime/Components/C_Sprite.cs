@@ -80,7 +80,7 @@ namespace ProjectMono.Graphics {
 
         public string Label => "Sprite";
         public void GUI_Draw() {
-            ImGui.Text("##Texture Info");
+            ImGui.Text("## Texture Info");
             ImGui.Text("Source: " + Texture.Name);
             ImGui.Text("Tex Dimensions: " + TotalImageWidth + "px X " + TotalImageHeight + "px");
             ImGui.Text("Cell Dimensions: " + CellCountX + " X " + CellCountY);
@@ -96,7 +96,7 @@ namespace ProjectMono.Graphics {
 
             ImGui.Separator();
 
-            ImGui.Text("##Sprite Layering");
+            ImGui.Text("## Sprite Layering");
             //SELECT Sprite Layer
             if (ImGui.Button("Sprite Layer: " + Layer.ToString()))
                 ImGui.OpenPopup("sprite_layer");
