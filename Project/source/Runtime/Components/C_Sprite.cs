@@ -1,4 +1,3 @@
-using System;
 using ImGuiNET;
 using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Graphics;
@@ -19,13 +18,14 @@ namespace ProjectMono.Graphics {
         BACKDROP_FAR
     }
 
-    public class C_Sprite : IGUIDrawable {
-        public Texture2D Texture;
+    public struct C_Sprite : IGUIDrawable {
+        public Texture2D Texture => TextureDatabase.GetTexture(m_TextureIndex);
         public Rectangle Rectangle = new Rectangle(0, 0, 16, 16);
         public SpriteAnchor Anchor;
         public SpriteLayer Layer;
         public int OrderInLayer;
         public bool FlipX;
+        int m_TextureIndex;
         int m_SpriteWidth, m_SpriteHeight, m_Frame;
         int TotalImageWidth => Texture.Width;
         int TotalImageHeight => Texture.Height;
@@ -33,22 +33,25 @@ namespace ProjectMono.Graphics {
         int CellCountY => TotalImageHeight / m_SpriteHeight;
         int MaxFrame => CellCountX * CellCountY - 1;
 
-        readonly Vector2[] ANCHOR_NORMALIZED_VECTORS = {
+        static readonly Vector2[] ANCHOR_NORMALIZED_VECTORS = {
             new Vector2(0, 0),      new Vector2(.5f, 0),        new Vector2(1.0f, 0),
             new Vector2(0, .5f),      new Vector2(0.5f, 0.5f),        new Vector2(1.0f, 0.5f),
             new Vector2(0, 1.0f),      new Vector2(.5f, 1.0f),        new Vector2(1.0f, 1.0f),
         };
 
-        public C_Sprite(Texture2D texture, int spriteWidth=0, int spriteHeight=0, int frame = 0, SpriteAnchor anchor = SpriteAnchor.CENTERED, SpriteLayer layer = SpriteLayer.CHARACTER, int orderInLayer = 0)
+        public C_Sprite(string textureName, int spriteWidth=0, int spriteHeight=0, int frame = 0, SpriteAnchor anchor = SpriteAnchor.CENTERED, SpriteLayer layer = SpriteLayer.CHARACTER, int orderInLayer = 0)
         {
-            Texture = texture;
+            m_TextureIndex = TextureDatabase.GetTextureIndex(textureName);
             Anchor = anchor;
             FlipX = false;
             Layer = layer;
             OrderInLayer=orderInLayer;
-            m_SpriteWidth = spriteWidth==0? TotalImageWidth : spriteWidth;
-            m_SpriteHeight = spriteHeight==0? TotalImageHeight : spriteHeight;
             m_Frame = frame;
+
+            m_SpriteWidth=0;
+            m_SpriteHeight=0;
+            m_SpriteWidth = spriteWidth==0? Texture.Width : spriteWidth;
+            m_SpriteHeight = spriteHeight==0? Texture.Height : spriteHeight;
             RecalculateRectangle();
         }
 

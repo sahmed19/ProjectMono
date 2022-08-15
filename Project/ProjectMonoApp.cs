@@ -60,19 +60,26 @@ namespace ProjectMono.Core {
             m_SpriteBatch = new SpriteBatch(GraphicsDevice);
             World = new World(new string[]{""});
 
+            //Register components
+            World.RegisterComponent<C_Camera>();
+            World.RegisterComponent<C_Motion>();
+            World.RegisterComponent<C_PlatformerData>();
+            World.RegisterComponent<C_PlatformerInput>();
+            World.RegisterComponent<C_Player>();
+            World.RegisterComponent<C_Sprite>();
+            World.RegisterComponent<C_Transform2>();
+
             var playerSprite = Content.Load<Texture2D>("graphics/characters/spritesheet_player");
             var pochitaSprite = Content.Load<Texture2D>("graphics/characters/pochita_icon");
             effect = Content.Load<Effect>("graphics/shaders/character");
 
-            var player = World.CreateEntity("Player");
-            var camera = World.CreateEntity("Camera");
-
-            m_PlayerID = player;
+            //var player = World.CreateEntity("Player");
+            //var camera = World.CreateEntity("Camera");
 
             Random random = new Random();
 
             for(int i = 0; i < 100; i++) {
-                //Entity pochita = World.CreateEntity();
+                Entity pochita = World.CreateEntity("Pochita");
                 //pochita.Attach(new C_Name("Pochita " + i));
 
                 Vector2 position = new Vector2(

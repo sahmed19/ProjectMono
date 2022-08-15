@@ -2,7 +2,7 @@ using Microsoft.Xna.Framework;
 using ImGuiNET;
 
 namespace ProjectMono.Physics {
-    public class C_Motion : IGUIDrawable {
+    public struct C_Motion : IGUIDrawable {
         public Vector2 PendingForces;
         public Vector2 Velocity;
         public float TerminalVelocity = 500.0f;
@@ -10,13 +10,13 @@ namespace ProjectMono.Physics {
         public float AngularVelocity;
         public float Friction;
 
-        public C_Motion(float angularVelocity = 0.0f, float friction = 10.0f, float mass = 10.0f) : this(Vector2.Zero, angularVelocity, friction, mass) {}
-        public C_Motion(Vector2 velocity, float angularVelocity = 0.0f, float friction = 10.0f, float mass = 10.0f) {
+        public C_Motion(Vector2 velocity = default, float angularVelocity = 0.0f, float friction = 10.0f, float terminalVelocity = 500.0f, float mass = 10.0f) {
+            PendingForces = Vector2.Zero;
             Velocity = velocity;
+            TerminalVelocity=terminalVelocity;
+            Mass = mass;
             AngularVelocity = angularVelocity;
             Friction = friction;
-            Mass = mass;
-            PendingForces = Vector2.Zero;
         }
 
         public string Label => "Motion";

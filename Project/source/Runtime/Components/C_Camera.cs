@@ -2,19 +2,19 @@ using Microsoft.Xna.Framework;
 using ImGuiNET;
 
 namespace ProjectMono.Core {
-    public class C_Camera : IGUIDrawable
+    public struct C_Camera : IGUIDrawable
     {
-        public int ID_CameraTarget;
         public float Zoom;
         public float TargetAdaptionTime;
         public Vector2 TargetAdaptionVelocity;
         public bool FollowTarget;
 
-        public C_Camera()
+        public C_Camera(float zoom = 1.0f, float targetAdaptionTime = 0.5f, bool followTarget = true)
         {
-            Zoom = 1.0f;
-            TargetAdaptionTime = .5f;
-            FollowTarget = true;
+            Zoom = zoom;
+            TargetAdaptionTime = targetAdaptionTime;
+            TargetAdaptionVelocity = Vector2.Zero;
+            FollowTarget = followTarget;
         }
 
         public string Label => "Camera";

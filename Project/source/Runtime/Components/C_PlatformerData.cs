@@ -1,18 +1,25 @@
 using ImGuiNET;
 
 namespace ProjectMono.Gameplay {
-    public class C_PlatformerData : IGUIDrawable
+    public struct C_PlatformerData : IGUIDrawable
     {
-        public float MoveForce = 950000.0f;
-        public float TopSpeed = 100.0f;
-        public float JumpForce = -25000.0f;
-        public float GravityForce = 3500.0f;
-        public float GroundFriction = 999.0f;
-        public float AirFriction = 0.0f;
-        public float HoldingJumpGravInfluence = 0.3f;
+        public float MoveForce;
+        public float TopSpeed;
+        public float JumpForce;
+        public float GravityForce;
+        public float GroundFriction;
+        public float AirFriction;
+        public float HoldingJumpGravInfluence;
         
-        public C_PlatformerData()
+        public C_PlatformerData(float moveForce = 950000.0f, float topSpeed = 100.0f, float jumpForce = -25000.0f, float gravityForce = 3500.0f, float groundFriction = 999.0f, float airFriction = 0.0f, float holdingJumpGravInfluence = 0.3f)
         {
+            MoveForce = moveForce;
+            TopSpeed = topSpeed;
+            JumpForce = jumpForce;
+            GravityForce = gravityForce;
+            GroundFriction = groundFriction;
+            AirFriction = airFriction;
+            HoldingJumpGravInfluence = holdingJumpGravInfluence;
         }
         public string Label => "Platformer Data";
 

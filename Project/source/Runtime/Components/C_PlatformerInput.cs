@@ -1,6 +1,6 @@
 using ImGuiNET;
 namespace ProjectMono.Gameplay {
-    public class C_PlatformerInput : IGUIDrawable
+    public struct C_PlatformerInput : IGUIDrawable
     {
         public float HorizontalInput;
         public bool JumpBuffer, ShootBuffer;
@@ -8,6 +8,10 @@ namespace ProjectMono.Gameplay {
 
         public C_PlatformerInput()
         {
+            HorizontalInput=0.0f;
+            JumpBuffer=false;
+            ShootBuffer=false;
+            HoldingJump=false;
         }
         public string Label => "Platformer Input";
         public void GUI_Draw()

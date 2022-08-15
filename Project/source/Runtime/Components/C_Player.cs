@@ -1,12 +1,14 @@
 using ImGuiNET;
 
 namespace ProjectMono.Gameplay {
-    public class C_Player : IGUIDrawable
+    public struct C_Player : IGUIDrawable
     {
-        public int Health = 10;
-        public int MaxHealth = 100;
-        public C_Player()
+        public int Health;
+        public int MaxHealth;
+        public C_Player(int maxHealth = 100)
         {
+            MaxHealth = maxHealth;
+            Health = maxHealth;
         }
         public string Label => "Player";
 

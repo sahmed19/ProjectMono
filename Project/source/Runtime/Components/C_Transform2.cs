@@ -2,16 +2,13 @@ using Microsoft.Xna.Framework;
 using ImGuiNET;
 
 namespace ProjectMono.Core {
-    public class C_Transform2 : IGUIDrawable {
+    public struct C_Transform2 : IGUIDrawable {
         public Vector2 Position;
         public Vector2 Scale;
         public float Angle;
         
 //CONSTRUCTORS
-        public C_Transform2() : this(Vector2.Zero) {}
-        public C_Transform2(Vector2 position) : this(position, 0.0f) {}
-        public C_Transform2(Vector2 position, float angle) : this(position, angle, Vector2.One) {}
-        public C_Transform2(Vector2 position, float angle, Vector2 scale) {
+        public C_Transform2(Vector2 position = default, float angle = 0.0f, Vector2 scale = default) {
             Position = position;
             Angle = angle;
             Scale = scale;
