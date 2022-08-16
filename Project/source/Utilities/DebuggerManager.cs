@@ -3,13 +3,11 @@ using System.Diagnostics;
 using ImGuiNET;
 using ProjectMono.Core;
 using System.Numerics;
-
-using System.Linq;
-using System.Collections.Generic;
-
 using ProjectMono.Graphics;
 using ProjectMono.Gameplay;
 using ProjectMono.Physics;
+
+using Flecs;
 
 [Flags]
 public enum MessageType {
@@ -35,26 +33,21 @@ public static class DebuggerManager {
         Debug.WriteLine(message);
     }
 
-    static IEnumerable<Type> GUI_DRAWABLE_TYPES;
-
-    public static void Initialize() {
-        GUI_DRAWABLE_TYPES = AppDomain.CurrentDomain.GetAssemblies()
-            .SelectMany(s => s.GetTypes())
-            .Where(p => typeof(IGUIDrawable).IsAssignableFrom(p));
-    }
-
     #region IMGUI
 
     static bool CtrlShift =>
         ImGui.GetIO().KeyCtrl && 
         ImGui.GetIO().KeyShift;
 
-    static bool Shortcut(ImGuiKey key) => CtrlShift && ImGui.IsKeyDown(key);
+    static bool Shortcut(ImGuiKey key) => CtrlShift && ImGui.IsKeyPressed(key);
 
     static bool OPEN_GENERAL_SETTINGS = false;
     static bool OPEN_ENTITY_BROWSER = false;
+    static bool OPEN_DEMO_WINDOW = false;
 
     public static void GUI_Debugger(ProjectMonoApp game) {
+
+        
 
         //Submenu
         if(ImGui.BeginMainMenuBar()) {
@@ -64,18 +57,23 @@ public static class DebuggerManager {
                     OPEN_GENERAL_SETTINGS=true;
                 if (ImGui.MenuItem("Entity Browser", "Ctrl-Shift-C"))
                     OPEN_ENTITY_BROWSER=true;
+                if(ImGui.MenuItem("Demo Window", "Ctrl-Shift-W"))
+                    OPEN_DEMO_WINDOW=true;
                 ImGui.EndMenu();
             }
             ImGui.EndMainMenuBar();
         }
 
         if(Shortcut(ImGuiKey.A))
-            OPEN_GENERAL_SETTINGS=true;
+            OPEN_GENERAL_SETTINGS=!OPEN_GENERAL_SETTINGS;
         if(Shortcut(ImGuiKey.C))
-            OPEN_ENTITY_BROWSER=true;
+            OPEN_ENTITY_BROWSER=!OPEN_ENTITY_BROWSER;
+        if(Shortcut(ImGuiKey.Z))
+            OPEN_DEMO_WINDOW=!OPEN_DEMO_WINDOW;
 
         if(OPEN_GENERAL_SETTINGS)   GUI_Settings(game, ref OPEN_GENERAL_SETTINGS);
         if(OPEN_ENTITY_BROWSER)     GUI_EntityBrowser(game, ref OPEN_ENTITY_BROWSER);
+        if(OPEN_DEMO_WINDOW)        ImGui.ShowDemoWindow();
     }
 
     static void GUI_Settings(ProjectMonoApp game, ref bool open) {
@@ -167,65 +165,104 @@ public static class DebuggerManager {
 
     static int SELECTED_ENTITY = 0;
     static void GUI_EntityBrowser(ProjectMonoApp game, ref bool open) {
-        ImGui.SetNextWindowSize(new Vector2(500, 440), ImGuiCond.FirstUseEver);
-        /*
+        ImGui.SetNextWindowSize(new Vector2(800, 440), ImGuiCond.FirstUseEver);
+        
         if(ImGui.Begin("Entity Browser", ref open))
         {
-            // Left
-            {
-                //Navigate selection with up and down
-                if(ImGui.IsKeyPressed(ImGuiKey.DownArrow))
-                    SELECTED_ENTITY++;
-                else if(ImGui.IsKeyPressed(ImGuiKey.UpArrow))
-                    SELECTED_ENTITY--;
-                SELECTED_ENTITY = Math.Clamp(SELECTED_ENTITY, 0, game.World.EntityCount-1);
-                //-----
+            var it = game.World.EntityIterator<C_Position>();
+            while(it.HasNext()) {
 
-                ImGui.BeginChild("left pane", new Vector2(150, 0), true);
-                for (int i = 0; i < game.World.EntityCount; i++)
+                // Left
                 {
-                    var name = game.World.GetEntityName(i);
-                    
-                    if (ImGui.Selectable((""+i).PadLeft(3, '0') + ": " + name, SELECTED_ENTITY == i))
-                        SELECTED_ENTITY = i;
-                }
-                ImGui.EndChild();
-            }
-            ImGui.SameLine();
-            // Right
-            {   
+                    //Navigate selection with up and down
+                    if(ImGui.IsKeyPressed(ImGuiKey.DownArrow))
+                        SELECTED_ENTITY++;
+                    else if(ImGui.IsKeyPressed(ImGuiKey.UpArrow))
+                        SELECTED_ENTITY--;
+                    SELECTED_ENTITY = Math.Clamp(SELECTED_ENTITY, 0, it.Count-1);
+                    //-----
 
-                ImGui.BeginGroup();
-                ImGui.BeginChild("item view", new Vector2(0, -ImGui.GetFrameHeightWithSpacing())); // Leave room for 1 line below us
-                ImGui.Text(game.World.GetEntityName(SELECTED_ENTITY));
-                ImGui.Separator();
-                {
-                    Entity e = game.World.GetEntity(SELECTED_ENTITY);
-                    DrawComponent<C_Transform2>(e);
-                    DrawComponent<C_Tags>(e);
-                    DrawComponent<C_Camera>(e);
-                    DrawComponent<C_Player>(e);
-                    DrawComponent<C_Motion>(e);
-                    DrawComponent<C_PlatformerData>(e);
-                    DrawComponent<C_PlatformerInput>(e);
-                    DrawComponent<C_Sprite>(e);
-                    
-                    ImGui.EndTabBar();
+                    ImGui.BeginChild("left pane", new Vector2(200, 0), true);
+                    for (int i = 0; i < it.Count; i++)
+                    {
+                        var name = it.Entity(i).Name();
+                        
+                        if (ImGui.Selectable((""+i).PadLeft(3, '0') + ": " + name, SELECTED_ENTITY == i))
+                            SELECTED_ENTITY = i;
+                    }
+                    ImGui.EndChild();
                 }
-                ImGui.EndChild();
-                ImGui.EndGroup();
+                ImGui.SameLine();
+                // Right
+                {
+
+                    Entity e = it.Entity(SELECTED_ENTITY);
+
+                    ImGui.BeginGroup();
+                    ImGui.BeginChild("item view", new Vector2(0, -ImGui.GetFrameHeightWithSpacing())); // Leave room for 1 line below us
+                    ImGui.Text(e.Name());
+                    ImGui.Separator();
+                    {
+                        if(ImGui.CollapsingHeader("Transform"))
+                        {
+                            if(e.HasComponent<C_Position>()) DragFloat2("Position", ref e.GetComponent<C_Position>().Position, 1.0f);
+                            if(e.HasComponent<C_Scale>()) DragFloat2("Scale", ref e.GetComponent<C_Scale>().Scale, 1.0f);
+                            if(e.HasComponent<C_Rotation>()) ImGui.DragFloat("Rotation", ref e.GetComponent<C_Rotation>().Angle, 1.0f);
+                        }
+                        if(ImGui.CollapsingHeader("Physics"))
+                        {
+                            if(e.HasComponent<C_Velocity>()) DragFloat2("Velocity", ref e.GetComponent<C_Velocity>().Velocity, 1.0f);
+                            if(e.HasComponent<C_TerminalVelocity>()) ImGui.DragFloat("Terminal Velocity", ref e.GetComponent<C_TerminalVelocity>().TerminalVelocity, 1.0f);
+                            if(e.HasComponent<C_Gravity>()) DragFloat2("Gravity", ref e.GetComponent<C_Gravity>().Gravity, 1.0f);
+                        }
+
+                        /*
+                        if(ImGui.CollapsingHeader("TRANSFORM"))
+                        {
+                            DrawComponent<C_Position>(e);
+                            DrawComponent<C_Rotation>(e);
+                            DrawComponent<C_Scale>(e);
+                            ImGui.Separator();
+                        }
+                        
+                        if(ImGui.CollapsingHeader("PHYSICS"))
+                        {
+                            DrawComponent<C_Motion>(e);
+                            ImGui.Separator();
+                        }
+
+                        if(ImGui.CollapsingHeader("GRAPHICS"))
+                        {
+                            DrawComponent<C_Camera>(e);
+                            DrawComponent<C_Sprite>(e);
+                            ImGui.Separator();
+                        }
+
+                        if(ImGui.CollapsingHeader("GAMEPLAY"))
+                        {
+                            DrawComponent<C_Health>(e);
+                            DrawComponent<C_PlatformerData>(e);
+                            DrawComponent<C_PlatformerInput>(e);
+                        }*/
+
+                        ImGui.EndTabBar();
+                    }
+                    ImGui.EndChild();
+                    ImGui.EndGroup();
+                }
             }
             ImGui.End();
+        }    
+    }
+
+    static void DragFloat2(string label, ref Microsoft.Xna.Framework.Vector2 vector, float speed) {
+        System.Numerics.Vector2 vec = vector.MonoVec2SysVec();
+        if(ImGui.DragFloat2(label, ref vec, speed)) {
+            vector = vec.SysVec2MonoVec();
         }
 
-        void DrawComponent<T>(Entity e) where T : class, IGUIDrawable {
-            if (!e.Has<T>()) return;
-            var component = e.Get<T>();
-            if(ImGui.CollapsingHeader(component.Label))
-                component.GUI_Draw();
-            ImGui.Separator();
-        }*/
     }
+
 
     #endregion
 

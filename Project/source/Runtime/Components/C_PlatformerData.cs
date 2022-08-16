@@ -4,7 +4,7 @@ using Flecs;
 
 namespace ProjectMono.Gameplay {
     [StructLayout(LayoutKind.Sequential)]
-    public struct C_PlatformerData : IComponent, IGUIDrawable
+    public struct C_PlatformerData : IComponent
     {
         public float MoveForce;
         public float TopSpeed;
@@ -23,18 +23,6 @@ namespace ProjectMono.Gameplay {
             GroundFriction = groundFriction;
             AirFriction = airFriction;
             HoldingJumpGravInfluence = holdingJumpGravInfluence;
-        }
-        public string Label => "Platformer Data";
-
-        public void GUI_Draw()
-        {
-            ImGui.DragFloat("Acceleration",                         ref MoveForce,                      1.0f);
-            ImGui.DragFloat("Top Speed",                            ref TopSpeed,                       1.0f);
-            ImGui.DragFloat("Jump Force",                           ref JumpForce,                      1.0f);
-            ImGui.DragFloat("Gravity Force",                        ref GravityForce,                   1.0f);
-            ImGui.DragFloat("Ground Friction",                      ref GroundFriction,                 1.0f);
-            ImGui.DragFloat("Air Friction",                         ref AirFriction,                    1.0f);
-            ImGui.DragFloat("Holding Jump Gravity Influence",       ref HoldingJumpGravInfluence,       1.0f);
         }
 
     }

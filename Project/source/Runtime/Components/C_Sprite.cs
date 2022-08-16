@@ -22,7 +22,7 @@ namespace ProjectMono.Graphics {
     }
 
     [StructLayout(LayoutKind.Sequential)]
-    public struct C_Sprite : IComponent, IGUIDrawable {
+    public struct C_Sprite : IComponent {
         public Texture2D Texture => TextureDatabase.GetTexture(TextureIndex);
         public int TextureIndex;
         public Rectangle Rectangle = new Rectangle(0, 0, 16, 16);
@@ -32,7 +32,7 @@ namespace ProjectMono.Graphics {
             get { return m_orderInLayer; }
             set { m_orderInLayer = Math.Clamp(value, -9999, 9999); }
         }
-        public int RenderOrder => ((int) Layer * 10000) + OrderInLayer;
+        public int Depth => ((int) Layer * 10000) + OrderInLayer;
         public bool FlipX;
         int m_orderInLayer;
         int m_SpriteWidth, m_SpriteHeight, m_Frame;
@@ -70,9 +70,6 @@ namespace ProjectMono.Graphics {
             RecalculateRectangle();
         }
 
-
-        public static implicit operator Texture2D(C_Sprite sprite) => sprite.Texture;
-
         public Vector2 GetOrigin()
         {
             Vector2 res = ANCHOR_NORMALIZED_VECTORS[(int) Anchor];
@@ -93,46 +90,6 @@ namespace ProjectMono.Graphics {
         {
             m_Frame = frame % MaxFrame;
             RecalculateRectangle();
-        }
-        public void IncrementFrame(int amt) => SetFrame(m_Frame + amt);
-
-
-        public string Label => "Sprite";
-        public void GUI_Draw() {
-            ImGui.Text("## Texture Info");
-            ImGui.Text("Source: " + Texture.Name);
-            ImGui.Text("Tex Dimensions: " + TotalImageWidth + "px X " + TotalImageHeight + "px");
-            ImGui.Text("Cell Dimensions: " + CellCountX + " X " + CellCountY);
-            ImGui.Text("Max Frame: " + MaxFrame);
-
-            ImGui.Separator();
-            
-            if(ImGui.DragInt2("Sprite Dimensions", ref m_SpriteWidth, 1, 1, TotalImageWidth) ||
-               ImGui.SliderInt("Current Frame", ref m_Frame, 0, MaxFrame))
-                RecalculateRectangle();
-
-            ImGui.Checkbox("FlipX", ref FlipX);
-
-            ImGui.Separator();
-
-            ImGui.Text("## Sprite Layering");
-            //SELECT Sprite Layer
-            if (ImGui.Button("Sprite Layer: " + Layer.ToString()))
-                ImGui.OpenPopup("sprite_layer");
-                
-            if(ImGui.BeginPopup("sprite_layer"))
-            {
-                ImGui.Text("Sprite Layer");
-                ImGui.Separator();
-                for (int i = 0; i < 6; i++)
-                    if (ImGui.Selectable(((SpriteLayer) i).ToString())) {
-                        Layer = (SpriteLayer) i;
-                    }
-                ImGui.EndPopup();
-            }
-
-            ImGui.DragInt("Sprite Order in Layer", ref m_orderInLayer, 10, -999, 999);
-            
         }
 
     }

@@ -26,9 +26,10 @@ namespace ProjectMono.Core {
         public InputManager InputManager {get; private set; }
         public World World { get; private set; }
         public GraphicsDeviceManager GraphicsDeviceManager {get; private set; }
-        
-
         public static int TOTAL_FRAME_COUNT {get; private set;}
+        public static ProjectMonoApp INSTANCE;
+        public const int BASE_RESOLUTION_WIDTH = 320;
+        public const int BASE_RESOLUTION_HEIGHT = 180;
 
         //int m_PlayerID;
 
@@ -36,9 +37,9 @@ namespace ProjectMono.Core {
 
         public ProjectMonoApp()
         {
+            INSTANCE=this;
             GraphicsDeviceManager = new GraphicsDeviceManager(this);
             InputManager = new InputManager(this);
-            DebuggerManager.Initialize();
 
             Settings.Load(this);
             
@@ -48,8 +49,10 @@ namespace ProjectMono.Core {
 
         protected override void Initialize()
         {
-            var viewportAdapter = new BoxingViewportAdapter(Window, GraphicsDevice, 320, 180);
+            var viewportAdapter = new BoxingViewportAdapter(Window, GraphicsDevice, BASE_RESOLUTION_WIDTH, BASE_RESOLUTION_HEIGHT);
             Camera = new OrthographicCamera(viewportAdapter);
+            Camera.Zoom=0.5f;
+            Camera.Move(new Vector2(-BASE_RESOLUTION_WIDTH/2, -BASE_RESOLUTION_HEIGHT/2));
             
             m_IMGUI = new ImGuiRenderer(this);
             m_IMGUI.RebuildFontAtlas();
@@ -61,32 +64,65 @@ namespace ProjectMono.Core {
             SpriteBatch = new SpriteBatch(GraphicsDevice);
             World = new World(new string[]{""});
             effect = Content.Load<Effect>("graphics/shaders/character");
-
             TextureDatabase.Initialize();
+
+            //Register Textures
             void RegisterTexture(string name, string path) => TextureDatabase.RegisterTexture(name, Content.Load<Texture2D>(path + name));
             RegisterTexture("spritesheet_player", "graphics/characters/");
             RegisterTexture("icon_pochita", "graphics/characters/");
 
             //Register components
+            World.RegisterComponent<C_Position>();
+            World.RegisterComponent<C_Rotation>();
+            World.RegisterComponent<C_Scale>();
+
+            World.RegisterComponent<C_PendingForces>();
+            World.RegisterComponent<C_Velocity>();
+            World.RegisterComponent<C_Gravity>();
+            World.RegisterComponent<C_TerminalVelocity>();
+            World.RegisterComponent<C_AngularVelocity>();
+            World.RegisterComponent<C_Friction>();
+            World.RegisterComponent<C_Mass>();
+
             World.RegisterComponent<C_Camera>();
-            World.RegisterComponent<C_Motion>();
+            
             World.RegisterComponent<C_PlatformerData>();
             World.RegisterComponent<C_PlatformerInput>();
-            World.RegisterComponent<C_Player>();
-            World.RegisterComponent<C_Sprite>();
-            World.RegisterComponent<C_Transform2>();
 
-            //Register systems
+            World.RegisterComponent<C_Health>();
+            World.RegisterComponent<C_Sprite>();
             
-            //var player = World.CreateEntity("Player");
-            //var camera = World.CreateEntity("Camera");
+            //Register systems
+
+            World.RegisterSystem(S_Physics.ApplyGravityToPendingForces, EcsOnUpdate,
+              $"{typeof(C_PendingForces)}, {typeof(C_Gravity)}");
+
+            World.RegisterSystem(S_Physics.ApplyPendingForcesToVelocity, EcsOnUpdate,
+              $"{typeof(C_Velocity)}, {typeof(C_PendingForces)}, ?{typeof(C_Friction)}, ?{typeof(C_Mass)}");
+
+            World.RegisterSystem(S_Physics.ClampVelocityXToTerminalVelocity, EcsOnUpdate,
+              $"{typeof(C_Velocity)}, {typeof(C_TerminalVelocity)}");
+
+            World.RegisterSystem(S_Physics.ApplyVelocityToPosition, EcsOnUpdate,
+              $"{typeof(C_Position)}, {typeof(C_Velocity)}");
+            
+            World.RegisterSystem(S_Collision.BounceOffScreenEdge, EcsOnUpdate,
+              $"{typeof(C_Position)}, {typeof(C_Velocity)}");
+
+            World.RegisterSystem(S_SpriteRendering.PendSpritesForDraw, EcsPostUpdate, 
+              $"{typeof(C_Sprite)}, {typeof(C_Position)}, ?{typeof(C_Rotation)}, ?{typeof(C_Scale)}");
+              
+            World.RegisterSystem(S_Physics.RotateTowardVelocityDirection, EcsOnUpdate,
+              $"{typeof(C_Rotation)}, {typeof(C_Velocity)}");
 
             Random random = new Random();
 
+            var pochitaPrefab = World.CreatePrefab("PochitaPrefab");
+            
 
-
-            for(int i = 0; i < 100; i++) {
+            for(int i = 0; i < 10000; i++) {
                 Entity pochita = World.CreateEntity("Pochita " + i);
+                pochita.IsA(pochitaPrefab);
 
                 Vector2 position = new Vector2(
                     MathHelper.Lerp(-10.0f, 10.0f, (float) random.NextDouble()),
@@ -94,15 +130,13 @@ namespace ProjectMono.Core {
 
                 random.NextUnitVector(out var velocity);
 
-                pochita.SetComponent(new C_Transform2(position, 0.0f, Vector2.One * .1f));
-                //pochita.SetComponent(new C_Motion(velocity));
+                pochita.SetComponent(new C_Position() {Position=position});
+                pochita.SetComponent(new C_Scale() {Scale=Vector2.One*.03f});
+                pochita.SetComponent(new C_Rotation());
+                pochita.SetComponent(new C_PendingForces());
+                //pochita.SetComponent(new C_Gravity() {Gravity = Vector2.UnitY * 10.0f});
+                pochita.SetComponent(new C_Velocity() {Velocity = velocity});
                 pochita.SetComponent(new C_Sprite(1, spriteWidth: 190, spriteHeight: 190));
-
-                DebuggerManager.Print("texindex during construction: " + pochita.GetComponent<C_Sprite>().TextureIndex);
-                /*
-                pochita.Attach(new C_Transform2(position, 0.0f, Vector2.One * .1f));
-                pochita.Attach(new C_Motion(velocity));
-                pochita.Attach(new C_Sprite(pochitaSprite, spriteWidth: 190, spriteHeight: 190));*/
             }
             /*
             player.Attach(new C_Name("Player"));
@@ -111,11 +145,12 @@ namespace ProjectMono.Core {
             player.Attach(new C_Motion(new Vector2(0, 0), mass: 50));
             player.Attach(new C_PlatformerData());
             player.Attach(new C_PlatformerInput());
-            player.Attach(new C_Player());
+            player.Attach(new C_Player());*/
 
-            camera.Attach(new C_Name("Camera"));
-            camera.Attach(new C_Transform2());
-            camera.Attach(new C_Camera());*/
+            var camera = World.CreateEntity("Camera");
+            camera.SetComponent(new C_Position(){Position=Vector2.Zero});
+            camera.SetComponent(new C_Rotation());
+            camera.SetComponent(new C_Camera(){Zoom=0.2f});
         }
 
         protected override void Update(GameTime gameTime)
@@ -135,7 +170,7 @@ namespace ProjectMono.Core {
 
         protected override void Draw(GameTime gameTime)
         {
-            GraphicsDevice.Clear(Color.Bisque);
+            GraphicsDevice.Clear(Color.DarkTurquoise);
             var transformMatrix = Camera.GetViewMatrix();
             
             SpriteBatch.Begin(
@@ -145,8 +180,7 @@ namespace ProjectMono.Core {
                 samplerState: SamplerState.PointWrap);
             m_IMGUI.BeforeLayout(gameTime);
             
-            S_SpriteRendering.Draw(this);
-            
+            S_SpriteRendering.DrawPendingSprites(this);
             DebuggerManager.GUI_Debugger(this);
             
             SpriteBatch.End();

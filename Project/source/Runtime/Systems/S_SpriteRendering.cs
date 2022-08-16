@@ -1,3 +1,4 @@
+using System.Collections.Generic;
 using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Graphics;
 using ProjectMono.Core;
@@ -7,38 +8,78 @@ namespace ProjectMono.Graphics {
 
     public static class S_SpriteRendering
     {
+        struct PendingSprite {
+            public int TextureID;
+            public Vector2 Position;
+            public Rectangle SourceRectangle;
+            public Color Color;
+            public float Angle;
+            public Vector2 Origin;
+            public Vector2 Scale;
+            public SpriteEffects SpriteEffects;
+            public float LayerDepth;
+        }
+        
+        static PendingSprite[] m_PendingSprites = new PendingSprite[MAX_PENDING_SPRITES];
 
-        public static void Draw(ProjectMonoApp game)
+        const int MAX_PENDING_SPRITES = 65536;
+        
+        static int CURRENT_NUM_SPRITES;
+
+        public static void PendSpritesForDraw(Iterator it)
         {
-            var it = game.World.EntityIterator<C_Sprite>();
+            CURRENT_NUM_SPRITES = it.Count;
+
+            bool rotationSet = false, scaleSet = false;
+
+            var spriteIter = it.Field<C_Sprite>(1);
+            var posIter = it.Field<C_Position>(2);
+            var rotIter = it.Field<C_Rotation>(3);
+            var scaleIter = it.Field<C_Scale>(4);
+
+            if(it.FieldIsSet(3)) rotationSet=true;
+            if(it.FieldIsSet(4)) scaleSet=true;
             
+            //var transformIter = it.Field<C_Transform2>(2);
 
-            while (it.HasNext()) 
+            for(int i = 0; i < CURRENT_NUM_SPRITES; i++)
             {
-                var spriteIter = it.Field<C_Sprite>(1);
-                var transformIter = it.Field<C_Transform2>(2);
-                for(int i = 0; i < it.Count; i++)
-                {
-                    DebuggerManager.Print("index is " + i);
-                    var sprite = spriteIter[i];
-                    var transform = it.Entity(i).GetComponent<C_Transform2>();
+                var sprite = spriteIter[i];
+                Vector2 pos = posIter[i].Position;
+                float rot = rotationSet? rotIter[i].Angle : 0.0f;
+                Vector2 scl = scaleSet? scaleIter[i].Scale : Vector2.One;
 
-                    Vector2 screenspacePosition = transform.Position * WorldData.PIXELS_PER_UNIT;
-                    DebuggerManager.Print(it.Entity(i).Name() + ": texindex: " + sprite.TextureIndex);
-
-                    game.SpriteBatch.Draw(
-                        sprite.Texture,
-                        screenspacePosition,
-                        sprite.Rectangle,
-                        Color.White,
-                        transform.Angle,
-                        sprite.GetOrigin(),
-                        transform.Scale,
-                        sprite.FlipX? SpriteEffects.FlipHorizontally : SpriteEffects.None,
-                        0f
-                    );
-                }
+                m_PendingSprites[i] = new PendingSprite{
+                    TextureID=sprite.TextureIndex,
+                    Position=pos * WorldData.PIXELS_PER_UNIT,
+                    SourceRectangle=sprite.Rectangle,
+                    Color=Color.White,
+                    Angle=rot,
+                    Origin=sprite.GetOrigin(),
+                    Scale=scl,
+                    SpriteEffects=sprite.FlipX?SpriteEffects.FlipHorizontally : SpriteEffects.None,
+                    LayerDepth=0.1f
+                };
             }
+        }
+
+        public static void DrawPendingSprites(ProjectMonoApp game) {
+            
+            for(var i = 0; i < CURRENT_NUM_SPRITES; i++) {
+                var pendingSprite = m_PendingSprites[i];
+                game.SpriteBatch.Draw(
+                    TextureDatabase.GetTexture(pendingSprite.TextureID),
+                    pendingSprite.Position,
+                    pendingSprite.SourceRectangle,
+                    pendingSprite.Color,
+                    pendingSprite.Angle,
+                    pendingSprite.Origin,
+                    pendingSprite.Scale,
+                    pendingSprite.SpriteEffects,
+                    pendingSprite.LayerDepth
+                );
+            }
+
         }
 
     }
