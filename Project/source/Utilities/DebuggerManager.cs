@@ -163,94 +163,124 @@ public static class DebuggerManager {
         }
     }
 
+    const int MAX_DISPLAYABLE_ENTITIES = 2048;
+    static Entity[] ALL_ENTITIES = new Entity[MAX_DISPLAYABLE_ENTITIES];
     static int SELECTED_ENTITY = 0;
+    static int CURRENT_NUM_ENTITIES = 0;
     static void GUI_EntityBrowser(ProjectMonoApp game, ref bool open) {
         ImGui.SetNextWindowSize(new Vector2(800, 440), ImGuiCond.FirstUseEver);
         
         if(ImGui.Begin("Entity Browser", ref open))
         {
-            var it = game.World.EntityIterator<C_Position>();
-            while(it.HasNext()) {
-
-                // Left
-                {
-                    //Navigate selection with up and down
-                    if(ImGui.IsKeyPressed(ImGuiKey.DownArrow))
-                        SELECTED_ENTITY++;
-                    else if(ImGui.IsKeyPressed(ImGuiKey.UpArrow))
-                        SELECTED_ENTITY--;
-                    SELECTED_ENTITY = Math.Clamp(SELECTED_ENTITY, 0, it.Count-1);
-                    //-----
-
-                    ImGui.BeginChild("left pane", new Vector2(200, 0), true);
-                    for (int i = 0; i < it.Count; i++)
+            if(ImGui.Button("Refresh", Vector2.One * 50) || CURRENT_NUM_ENTITIES==0)
+            {
+                
+                var it = game.World.EntityIterator<C_Position>();
+                CURRENT_NUM_ENTITIES=0;
+                while(it.HasNext()) {
+                    for(int i = 0; i < it.Count; i++)
                     {
-                        var name = it.Entity(i).Name();
-                        
-                        if (ImGui.Selectable((""+i).PadLeft(3, '0') + ": " + name, SELECTED_ENTITY == i))
-                            SELECTED_ENTITY = i;
+                        ALL_ENTITIES[CURRENT_NUM_ENTITIES] = it.Entity(i);
+                        CURRENT_NUM_ENTITIES++;
+                        if(CURRENT_NUM_ENTITIES>=MAX_DISPLAYABLE_ENTITIES) break;
                     }
-                    ImGui.EndChild();
-                }
-                ImGui.SameLine();
-                // Right
-                {
-
-                    Entity e = it.Entity(SELECTED_ENTITY);
-
-                    ImGui.BeginGroup();
-                    ImGui.BeginChild("item view", new Vector2(0, -ImGui.GetFrameHeightWithSpacing())); // Leave room for 1 line below us
-                    ImGui.Text(e.Name());
-                    ImGui.Separator();
-                    {
-                        if(ImGui.CollapsingHeader("Transform"))
-                        {
-                            if(e.HasComponent<C_Position>()) DragFloat2("Position", ref e.GetComponent<C_Position>().Position, 1.0f);
-                            if(e.HasComponent<C_Scale>()) DragFloat2("Scale", ref e.GetComponent<C_Scale>().Scale, 1.0f);
-                            if(e.HasComponent<C_Rotation>()) ImGui.DragFloat("Rotation", ref e.GetComponent<C_Rotation>().Angle, 1.0f);
-                        }
-                        if(ImGui.CollapsingHeader("Physics"))
-                        {
-                            if(e.HasComponent<C_Velocity>()) DragFloat2("Velocity", ref e.GetComponent<C_Velocity>().Velocity, 1.0f);
-                            if(e.HasComponent<C_TerminalVelocity>()) ImGui.DragFloat("Terminal Velocity", ref e.GetComponent<C_TerminalVelocity>().TerminalVelocity, 1.0f);
-                            if(e.HasComponent<C_Gravity>()) DragFloat2("Gravity", ref e.GetComponent<C_Gravity>().Gravity, 1.0f);
-                        }
-
-                        /*
-                        if(ImGui.CollapsingHeader("TRANSFORM"))
-                        {
-                            DrawComponent<C_Position>(e);
-                            DrawComponent<C_Rotation>(e);
-                            DrawComponent<C_Scale>(e);
-                            ImGui.Separator();
-                        }
-                        
-                        if(ImGui.CollapsingHeader("PHYSICS"))
-                        {
-                            DrawComponent<C_Motion>(e);
-                            ImGui.Separator();
-                        }
-
-                        if(ImGui.CollapsingHeader("GRAPHICS"))
-                        {
-                            DrawComponent<C_Camera>(e);
-                            DrawComponent<C_Sprite>(e);
-                            ImGui.Separator();
-                        }
-
-                        if(ImGui.CollapsingHeader("GAMEPLAY"))
-                        {
-                            DrawComponent<C_Health>(e);
-                            DrawComponent<C_PlatformerData>(e);
-                            DrawComponent<C_PlatformerInput>(e);
-                        }*/
-
-                        ImGui.EndTabBar();
-                    }
-                    ImGui.EndChild();
-                    ImGui.EndGroup();
+                    if(CURRENT_NUM_ENTITIES>=MAX_DISPLAYABLE_ENTITIES) break;
                 }
             }
+
+            // Left
+            {
+                //Navigate selection with up and down
+                if(ImGui.IsKeyPressed(ImGuiKey.DownArrow))
+                    SELECTED_ENTITY++;
+                else if(ImGui.IsKeyPressed(ImGuiKey.UpArrow))
+                    SELECTED_ENTITY--;
+                SELECTED_ENTITY = Math.Clamp(SELECTED_ENTITY, 0, CURRENT_NUM_ENTITIES-1);
+                //-----
+
+                ImGui.BeginChild("left pane", new Vector2(200, 0), true);
+                for (int i = 0; i < CURRENT_NUM_ENTITIES; i++)
+                {
+                    var name = ALL_ENTITIES[i].Name();
+                    
+                    if (ImGui.Selectable((""+i).PadLeft(3, '0') + ": " + name, SELECTED_ENTITY == i))
+                        SELECTED_ENTITY = i;
+                }
+                ImGui.EndChild();
+            }
+            ImGui.SameLine();
+            // Right
+            {
+
+                Entity e = ALL_ENTITIES[SELECTED_ENTITY];
+
+                ImGui.BeginGroup();
+                ImGui.BeginChild("item view", new Vector2(0, -ImGui.GetFrameHeightWithSpacing())); // Leave room for 1 line below us
+                ImGui.Text(e.Name());
+                ImGui.Separator();
+                {
+                    if(ImGui.CollapsingHeader("Transform"))
+                    {
+                        if(e.HasComponent<C_Position>()) DragFloat2("Position", ref e.GetComponent<C_Position>().Position, 0.1f);
+                        if(e.HasComponent<C_Scale>()) DragFloat2("Scale", ref e.GetComponent<C_Scale>().Scale, 0.1f);
+                        if(e.HasComponent<C_Rotation>()) ImGui.SliderAngle("Rotation", ref e.GetComponent<C_Rotation>().Angle, 0.0f, 360.0f);
+                    }
+
+                    if(ImGui.CollapsingHeader("Physics"))
+                    {
+                        if(e.HasComponent<C_Velocity>()) DragFloat2("Position", ref e.GetComponent<C_Position>().Position, 0.1f);
+                        if(e.HasComponent<C_TerminalVelocity>()) DragFloat2("Scale", ref e.GetComponent<C_Scale>().Scale, 0.1f);
+                        if(e.HasComponent<C_Rotation>()) ImGui.SliderAngle("Rotation", ref e.GetComponent<C_Rotation>().Angle, 0.0f, 360.0f);
+                    }
+                    
+                    if(ImGui.CollapsingHeader("Graphics"))
+                    {
+                        if(e.HasComponent<C_Camera>()) ImGui.DragFloat("Camera Zoom", ref e.GetComponent<C_Camera>().Zoom, 0.1f, 0.01f, 3.0f);
+                    }
+
+                    /*
+                    if(ImGui.CollapsingHeader("Physics"))
+                    {
+                        if(e.HasComponent<C_Velocity>()) DragFloat2("Velocity", ref e.GetComponent<C_Velocity>().Velocity, 1.0f);
+                        if(e.HasComponent<C_TerminalVelocity>()) ImGui.DragFloat("Terminal Velocity", ref e.GetComponent<C_TerminalVelocity>().TerminalVelocity, 1.0f);
+                        if(e.HasComponent<C_Gravity>()) DragFloat2("Gravity", ref e.GetComponent<C_Gravity>().Gravity, 1.0f);
+                    }*/
+
+                    /*
+                    if(ImGui.CollapsingHeader("TRANSFORM"))
+                    {
+                        DrawComponent<C_Position>(e);
+                        DrawComponent<C_Rotation>(e);
+                        DrawComponent<C_Scale>(e);
+                        ImGui.Separator();
+                    }
+                    
+                    if(ImGui.CollapsingHeader("PHYSICS"))
+                    {
+                        DrawComponent<C_Motion>(e);
+                        ImGui.Separator();
+                    }
+
+                    if(ImGui.CollapsingHeader("GRAPHICS"))
+                    {
+                        DrawComponent<C_Camera>(e);
+                        DrawComponent<C_Sprite>(e);
+                        ImGui.Separator();
+                    }
+
+                    if(ImGui.CollapsingHeader("GAMEPLAY"))
+                    {
+                        DrawComponent<C_Health>(e);
+                        DrawComponent<C_PlatformerData>(e);
+                        DrawComponent<C_PlatformerInput>(e);
+                    }*/
+
+                    ImGui.EndTabBar();
+                }
+                ImGui.EndChild();
+                ImGui.EndGroup();
+            }
+            
             ImGui.End();
         }    
     }
