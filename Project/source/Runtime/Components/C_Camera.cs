@@ -1,8 +1,11 @@
 using Microsoft.Xna.Framework;
 using ImGuiNET;
+using System.Runtime.InteropServices;
+using Flecs;
 
 namespace ProjectMono.Core {
-    public struct C_Camera : IGUIDrawable
+    [StructLayout(LayoutKind.Sequential)]
+    public struct C_Camera : IComponent, IGUIDrawable
     {
         public float Zoom;
         public float TargetAdaptionTime;

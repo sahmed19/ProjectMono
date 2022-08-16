@@ -1,7 +1,10 @@
 using ImGuiNET;
+using System.Runtime.InteropServices;
+using Flecs;
 
 namespace ProjectMono.Gameplay {
-    public struct C_PlatformerData : IGUIDrawable
+    [StructLayout(LayoutKind.Sequential)]
+    public struct C_PlatformerData : IComponent, IGUIDrawable
     {
         public float MoveForce;
         public float TopSpeed;

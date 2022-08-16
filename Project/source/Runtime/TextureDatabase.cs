@@ -1,3 +1,4 @@
+using System.Diagnostics;
 using Microsoft.Xna.Framework.Graphics;
 using System.Collections.Generic;
 
@@ -7,7 +8,7 @@ namespace ProjectMono.Graphics {
         const int MAX_TEXTURES = 256;
         static Texture2D[] m_TextureArray;
         static Dictionary<string, int> m_TextureName2Index;
-        static int m_TextureCount;
+        static int m_TextureCount=0;
 
         public static void Initialize() {
             m_TextureArray = new Texture2D[MAX_TEXTURES];
@@ -40,12 +41,15 @@ namespace ProjectMono.Graphics {
         }
 
         public static Texture2D GetTexture(string name) {
+            
+            DebuggerManager.Print(name);
+
             return GetTexture(GetTextureIndex(name));
         }
 
         public static Texture2D GetTexture(int index) {
             if(index >= m_TextureCount || index < 0)
-                throw new System.Exception("Index out of range exception! Make sure texture index is correct.");
+                throw new System.Exception("Index " + index + " out of range exception! Make sure texture index is correct.");
             return m_TextureArray[index];
         }
 

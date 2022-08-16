@@ -1,8 +1,12 @@
 using Microsoft.Xna.Framework;
 using ImGuiNET;
+using System.Runtime.InteropServices;
+using Flecs;
 
 namespace ProjectMono.Physics {
-    public struct C_Motion : IGUIDrawable {
+    [StructLayout(LayoutKind.Sequential)]
+    public struct C_Motion : IComponent, IGUIDrawable
+    {
         public Vector2 PendingForces;
         public Vector2 Velocity;
         public float TerminalVelocity = 500.0f;

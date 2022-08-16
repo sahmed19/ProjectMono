@@ -1,6 +1,9 @@
+using System;
 using ImGuiNET;
 using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Graphics;
+using System.Runtime.InteropServices;
+using Flecs;
 
 namespace ProjectMono.Graphics {
 
@@ -18,14 +21,20 @@ namespace ProjectMono.Graphics {
         BACKDROP_FAR
     }
 
-    public struct C_Sprite : IGUIDrawable {
-        public Texture2D Texture => TextureDatabase.GetTexture(m_TextureIndex);
+    [StructLayout(LayoutKind.Sequential)]
+    public struct C_Sprite : IComponent, IGUIDrawable {
+        public Texture2D Texture => TextureDatabase.GetTexture(TextureIndex);
+        public int TextureIndex;
         public Rectangle Rectangle = new Rectangle(0, 0, 16, 16);
         public SpriteAnchor Anchor;
         public SpriteLayer Layer;
-        public int OrderInLayer;
+        public int OrderInLayer {
+            get { return m_orderInLayer; }
+            set { m_orderInLayer = Math.Clamp(value, -9999, 9999); }
+        }
+        public int RenderOrder => ((int) Layer * 10000) + OrderInLayer;
         public bool FlipX;
-        int m_TextureIndex;
+        int m_orderInLayer;
         int m_SpriteWidth, m_SpriteHeight, m_Frame;
         int TotalImageWidth => Texture.Width;
         int TotalImageHeight => Texture.Height;
@@ -39,13 +48,19 @@ namespace ProjectMono.Graphics {
             new Vector2(0, 1.0f),      new Vector2(.5f, 1.0f),        new Vector2(1.0f, 1.0f),
         };
 
-        public C_Sprite(string textureName, int spriteWidth=0, int spriteHeight=0, int frame = 0, SpriteAnchor anchor = SpriteAnchor.CENTERED, SpriteLayer layer = SpriteLayer.CHARACTER, int orderInLayer = 0)
+        public C_Sprite(string textureName, int spriteWidth=0, int spriteHeight=0, int frame = 0, SpriteAnchor anchor = SpriteAnchor.CENTERED, SpriteLayer layer = SpriteLayer.CHARACTER, int orderInLayer = 0) :
+        this(TextureDatabase.GetTextureIndex(textureName), spriteWidth, spriteHeight, frame, anchor, layer, orderInLayer) 
         {
-            m_TextureIndex = TextureDatabase.GetTextureIndex(textureName);
+            DebuggerManager.Print("Constructing! " + textureName + " has index of " + TextureIndex);
+        }
+        
+        public C_Sprite(int textureIndex=0, int spriteWidth=0, int spriteHeight=0, int frame = 0, SpriteAnchor anchor = SpriteAnchor.CENTERED, SpriteLayer layer = SpriteLayer.CHARACTER, int orderInLayer = 0)
+        {
+            TextureIndex = textureIndex;
             Anchor = anchor;
             FlipX = false;
             Layer = layer;
-            OrderInLayer=orderInLayer;
+            m_orderInLayer=orderInLayer;
             m_Frame = frame;
 
             m_SpriteWidth=0;
@@ -54,6 +69,7 @@ namespace ProjectMono.Graphics {
             m_SpriteHeight = spriteHeight==0? Texture.Height : spriteHeight;
             RecalculateRectangle();
         }
+
 
         public static implicit operator Texture2D(C_Sprite sprite) => sprite.Texture;
 
@@ -115,7 +131,7 @@ namespace ProjectMono.Graphics {
                 ImGui.EndPopup();
             }
 
-            ImGui.DragInt("Sprite Order in Layer", ref OrderInLayer);
+            ImGui.DragInt("Sprite Order in Layer", ref m_orderInLayer, 10, -999, 999);
             
         }
 

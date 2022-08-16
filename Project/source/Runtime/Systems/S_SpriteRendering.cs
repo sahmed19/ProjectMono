@@ -1,58 +1,46 @@
-/* using System.Linq;
 using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Graphics;
 using ProjectMono.Core;
+using Flecs;
 
 namespace ProjectMono.Graphics {
 
-    public class S_SpriteRendering : EntityDrawSystem
+    public static class S_SpriteRendering
     {
-        readonly SpriteBatch m_SpriteBatch;
 
-        ComponentMapper<C_Transform2> m_Transform2Mapper;
-        ComponentMapper<C_Sprite> m_SpriteMapper;
-
-        public S_SpriteRendering(SpriteBatch spriteBatch) : base(Aspect.All(
-            typeof(C_Transform2),
-            typeof(C_Sprite)))
+        public static void Draw(ProjectMonoApp game)
         {
-            m_SpriteBatch = spriteBatch;
-        }
+            var it = game.World.EntityIterator<C_Sprite>();
+            
 
-
-        public override void Initialize(IComponentMapperService mapperService)
-        {
-            m_Transform2Mapper = mapperService.GetMapper<C_Transform2>();
-            m_SpriteMapper = mapperService.GetMapper<C_Sprite>();
-        }
-
-        public override void Draw(GameTime gameTime)
-        {
-            var orderedBySpriteLayer = ActiveEntities
-                .OrderBy(x => m_SpriteMapper.Get(x).Layer)
-                .ThenBy(x => m_SpriteMapper.Get(x).OrderInLayer);
-
-            foreach (var entity in orderedBySpriteLayer)
+            while (it.HasNext()) 
             {
-                var transform = m_Transform2Mapper.Get(entity);
-                var sprite = m_SpriteMapper.Get(entity);
+                var spriteIter = it.Field<C_Sprite>(1);
+                var transformIter = it.Field<C_Transform2>(2);
+                for(int i = 0; i < it.Count; i++)
+                {
+                    DebuggerManager.Print("index is " + i);
+                    var sprite = spriteIter[i];
+                    var transform = it.Entity(i).GetComponent<C_Transform2>();
 
-                Vector2 screenspacePosition = transform.Position * WorldData.PIXELS_PER_UNIT;
+                    Vector2 screenspacePosition = transform.Position * WorldData.PIXELS_PER_UNIT;
+                    DebuggerManager.Print(it.Entity(i).Name() + ": texindex: " + sprite.TextureIndex);
 
-                m_SpriteBatch.Draw(
-                    sprite.Texture,
-                    screenspacePosition,
-                    sprite.Rectangle,
-                    Color.White,
-                    transform.Angle,
-                    sprite.GetOrigin(),
-                    transform.Scale,
-                    sprite.FlipX? SpriteEffects.FlipHorizontally : SpriteEffects.None,
-                    0f
-                );
+                    game.SpriteBatch.Draw(
+                        sprite.Texture,
+                        screenspacePosition,
+                        sprite.Rectangle,
+                        Color.White,
+                        transform.Angle,
+                        sprite.GetOrigin(),
+                        transform.Scale,
+                        sprite.FlipX? SpriteEffects.FlipHorizontally : SpriteEffects.None,
+                        0f
+                    );
+                }
             }
         }
 
     }
 
-} */
+}

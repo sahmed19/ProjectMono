@@ -1,8 +1,11 @@
 using Microsoft.Xna.Framework;
 using ImGuiNET;
+using System.Runtime.InteropServices;
+using Flecs;
 
 namespace ProjectMono.Core {
-    public struct C_Transform2 : IGUIDrawable {
+    [StructLayout(LayoutKind.Sequential)]
+    public struct C_Transform2 : IComponent, IGUIDrawable {
         public Vector2 Position;
         public Vector2 Scale;
         public float Angle;

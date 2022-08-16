@@ -1,6 +1,9 @@
 using ImGuiNET;
+using System.Runtime.InteropServices;
+using Flecs;
 namespace ProjectMono.Gameplay {
-    public struct C_PlatformerInput : IGUIDrawable
+    [StructLayout(LayoutKind.Sequential)]
+    public struct C_PlatformerInput : IComponent, IGUIDrawable
     {
         public float HorizontalInput;
         public bool JumpBuffer, ShootBuffer;

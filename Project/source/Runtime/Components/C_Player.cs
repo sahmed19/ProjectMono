@@ -1,7 +1,10 @@
 using ImGuiNET;
+using System.Runtime.InteropServices;
+using Flecs;
 
 namespace ProjectMono.Gameplay {
-    public struct C_Player : IGUIDrawable
+    [StructLayout(LayoutKind.Sequential)]
+    public struct C_Player : IComponent, IGUIDrawable
     {
         public int Health;
         public int MaxHealth;

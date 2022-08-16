@@ -1,4 +1,5 @@
-﻿using System;
+﻿using System.Diagnostics;
+using System;
 using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Graphics;
 using Microsoft.Xna.Framework.Input;
@@ -12,14 +13,15 @@ using ProjectMono.Gameplay;
 using MonoGame.Extended.ViewportAdapters;
 
 using Flecs;
+using static flecs_hub.flecs;
 using ImGuiNET.XNA;
 
 namespace ProjectMono.Core {
 
     public class ProjectMonoApp : Game
     {
-        SpriteBatch m_SpriteBatch;
         ImGuiRenderer m_IMGUI;
+        public SpriteBatch SpriteBatch {get; private set; }
         public OrthographicCamera Camera { get; private set; }
         public InputManager InputManager {get; private set; }
         public World World { get; private set; }
@@ -48,7 +50,6 @@ namespace ProjectMono.Core {
         {
             var viewportAdapter = new BoxingViewportAdapter(Window, GraphicsDevice, 320, 180);
             Camera = new OrthographicCamera(viewportAdapter);
-            Camera.Move(new Vector2(-200.0f, 200.0f));
             
             m_IMGUI = new ImGuiRenderer(this);
             m_IMGUI.RebuildFontAtlas();
@@ -57,8 +58,14 @@ namespace ProjectMono.Core {
 
         protected override void LoadContent()
         {
-            m_SpriteBatch = new SpriteBatch(GraphicsDevice);
+            SpriteBatch = new SpriteBatch(GraphicsDevice);
             World = new World(new string[]{""});
+            effect = Content.Load<Effect>("graphics/shaders/character");
+
+            TextureDatabase.Initialize();
+            void RegisterTexture(string name, string path) => TextureDatabase.RegisterTexture(name, Content.Load<Texture2D>(path + name));
+            RegisterTexture("spritesheet_player", "graphics/characters/");
+            RegisterTexture("icon_pochita", "graphics/characters/");
 
             //Register components
             World.RegisterComponent<C_Camera>();
@@ -69,24 +76,29 @@ namespace ProjectMono.Core {
             World.RegisterComponent<C_Sprite>();
             World.RegisterComponent<C_Transform2>();
 
-            var playerSprite = Content.Load<Texture2D>("graphics/characters/spritesheet_player");
-            var pochitaSprite = Content.Load<Texture2D>("graphics/characters/pochita_icon");
-            effect = Content.Load<Effect>("graphics/shaders/character");
-
+            //Register systems
+            
             //var player = World.CreateEntity("Player");
             //var camera = World.CreateEntity("Camera");
 
             Random random = new Random();
 
+
+
             for(int i = 0; i < 100; i++) {
-                Entity pochita = World.CreateEntity("Pochita");
-                //pochita.Attach(new C_Name("Pochita " + i));
+                Entity pochita = World.CreateEntity("Pochita " + i);
 
                 Vector2 position = new Vector2(
                     MathHelper.Lerp(-10.0f, 10.0f, (float) random.NextDouble()),
                     MathHelper.Lerp(-10.0f, 10.0f, (float) random.NextDouble()));
 
                 random.NextUnitVector(out var velocity);
+
+                pochita.SetComponent(new C_Transform2(position, 0.0f, Vector2.One * .1f));
+                //pochita.SetComponent(new C_Motion(velocity));
+                pochita.SetComponent(new C_Sprite(1, spriteWidth: 190, spriteHeight: 190));
+
+                DebuggerManager.Print("texindex during construction: " + pochita.GetComponent<C_Sprite>().TextureIndex);
                 /*
                 pochita.Attach(new C_Transform2(position, 0.0f, Vector2.One * .1f));
                 pochita.Attach(new C_Motion(velocity));
@@ -115,7 +127,7 @@ namespace ProjectMono.Core {
                 Exit();
 
             InputManager.Tick(gameTime);
-            //World.Update(gameTime);
+            World.Progress(deltaTime);
             InputManager.LateTick();
 
             base.Update(gameTime);
@@ -126,21 +138,22 @@ namespace ProjectMono.Core {
             GraphicsDevice.Clear(Color.Bisque);
             var transformMatrix = Camera.GetViewMatrix();
             
-            m_SpriteBatch.Begin(
+            SpriteBatch.Begin(
                 SpriteSortMode.Immediate,
                 BlendState.AlphaBlend,
                 transformMatrix: transformMatrix,
                 samplerState: SamplerState.PointWrap);
             m_IMGUI.BeforeLayout(gameTime);
             
-            //World.Draw(gameTime);
-            base.Draw(gameTime);
+            S_SpriteRendering.Draw(this);
             
             DebuggerManager.GUI_Debugger(this);
             
-            m_SpriteBatch.End();
+            SpriteBatch.End();
             m_IMGUI.AfterLayout();
         }
+
+
     }
 
 }
