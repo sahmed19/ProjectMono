@@ -52,7 +52,6 @@ namespace ProjectMono.Core {
             var viewportAdapter = new BoxingViewportAdapter(Window, GraphicsDevice, BASE_RESOLUTION_WIDTH, BASE_RESOLUTION_HEIGHT);
             Camera = new OrthographicCamera(viewportAdapter);
             Camera.Zoom=0.5f;
-            Camera.Move(new Vector2(-BASE_RESOLUTION_WIDTH/2, -BASE_RESOLUTION_HEIGHT/2));
             
             m_IMGUI = new ImGuiRenderer(this);
             m_IMGUI.RebuildFontAtlas();
@@ -108,17 +107,26 @@ namespace ProjectMono.Core {
             
             World.RegisterSystem(S_Collision.BounceOffScreenEdge, EcsOnUpdate,
               $"{typeof(C_Position)}, {typeof(C_Velocity)}");
-
-            World.RegisterSystem(S_SpriteRendering.PendSpritesForDraw, EcsPostUpdate, 
-              $"{typeof(C_Sprite)}, {typeof(C_Position)}, ?{typeof(C_Rotation)}, ?{typeof(C_Scale)}");
               
             World.RegisterSystem(S_Physics.RotateTowardVelocityDirection, EcsOnUpdate,
               $"{typeof(C_Rotation)}, {typeof(C_Velocity)}");
+
+            World.RegisterSystem(S_Camera.UpdateCameraPosition, EcsOnUpdate,
+              $"{typeof(C_Camera)}, {typeof(C_Position)}, ?{typeof(C_Rotation)}");
+  
+            World.RegisterSystem(S_SpriteRendering.PendSpritesForDraw, EcsPostUpdate, 
+              $"{typeof(C_Sprite)}, {typeof(C_Position)}, ?{typeof(C_Rotation)}, ?{typeof(C_Scale)}");
+            
 
             Random random = new Random();
 
             var pochitaPrefab = World.CreatePrefab("PochitaPrefab");
             
+
+            var camera = World.CreateEntity("Camera");
+            camera.SetComponent(new C_Position(){Position=Vector2.Zero});
+            camera.SetComponent(new C_Rotation());
+            camera.SetComponent(new C_Camera(){Zoom=0.5f});
 
             for(int i = 0; i < 10000; i++) {
                 Entity pochita = World.CreateEntity("Pochita " + i);
@@ -146,11 +154,6 @@ namespace ProjectMono.Core {
             player.Attach(new C_PlatformerData());
             player.Attach(new C_PlatformerInput());
             player.Attach(new C_Player());*/
-
-            var camera = World.CreateEntity("Camera");
-            camera.SetComponent(new C_Position(){Position=Vector2.Zero});
-            camera.SetComponent(new C_Rotation());
-            camera.SetComponent(new C_Camera(){Zoom=0.2f});
         }
 
         protected override void Update(GameTime gameTime)

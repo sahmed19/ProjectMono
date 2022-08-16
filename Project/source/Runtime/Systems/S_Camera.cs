@@ -23,7 +23,7 @@ namespace ProjectMono.Core {
 
                 actualCamera.Zoom = cam.Zoom;
 
-                actualCamera.Position = (pos.Position - new Vector2(10.0f, 8.0f)) * WorldData.PIXELS_PER_UNIT;
+                actualCamera.Position = (pos.Position - new Vector2(10.0f, 6.0f)) * WorldData.PIXELS_PER_UNIT;
                 actualCamera.Position = new Vector2(
                     (int) actualCamera.Position.X,
                     (int) actualCamera.Position.Y
