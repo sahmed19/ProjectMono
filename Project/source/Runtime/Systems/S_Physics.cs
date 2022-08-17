@@ -22,7 +22,7 @@ namespace ProjectMono.Physics {
 
         public static void ApplyPendingForcesToVelocity(Iterator it)
         {
-            float deltaTime = it.DeltaSystemTime;
+            float deltaTime = it.DeltaSystemTime();
             
             var velIter = it.Field<C_Velocity>(1);
             var pdfIter = it.Field<C_PendingForces>(2);
@@ -51,7 +51,7 @@ namespace ProjectMono.Physics {
 
         public static void ClampVelocityXToTerminalVelocity(Iterator it)
         {
-            float deltaTime = it.DeltaSystemTime;
+            float deltaTime = it.DeltaSystemTime();
             
             var velIter = it.Field<C_Velocity>(1);
             var tvIter = it.Field<C_TerminalVelocity>(2);
@@ -67,7 +67,7 @@ namespace ProjectMono.Physics {
 
         public static void ApplyVelocityToPosition(Iterator it)
         {
-            float deltaTime = it.DeltaSystemTime;
+            float deltaTime = it.DeltaSystemTime();
             
             var posIter = it.Field<C_Position>(1);
             var velIter = it.Field<C_Velocity>(2);

@@ -230,50 +230,12 @@ public static class DebuggerManager {
                     {
                         if(e.HasComponent<C_Velocity>()) DragFloat2("Position", ref e.GetComponent<C_Position>().Position, 0.1f);
                         if(e.HasComponent<C_TerminalVelocity>()) DragFloat2("Scale", ref e.GetComponent<C_Scale>().Scale, 0.1f);
-                        if(e.HasComponent<C_Rotation>()) ImGui.SliderAngle("Rotation", ref e.GetComponent<C_Rotation>().Angle, 0.0f, 360.0f);
                     }
                     
                     if(ImGui.CollapsingHeader("Graphics"))
                     {
                         if(e.HasComponent<C_Camera>()) ImGui.DragFloat("Camera Zoom", ref e.GetComponent<C_Camera>().Zoom, 0.1f, 0.01f, 3.0f);
                     }
-
-                    /*
-                    if(ImGui.CollapsingHeader("Physics"))
-                    {
-                        if(e.HasComponent<C_Velocity>()) DragFloat2("Velocity", ref e.GetComponent<C_Velocity>().Velocity, 1.0f);
-                        if(e.HasComponent<C_TerminalVelocity>()) ImGui.DragFloat("Terminal Velocity", ref e.GetComponent<C_TerminalVelocity>().TerminalVelocity, 1.0f);
-                        if(e.HasComponent<C_Gravity>()) DragFloat2("Gravity", ref e.GetComponent<C_Gravity>().Gravity, 1.0f);
-                    }*/
-
-                    /*
-                    if(ImGui.CollapsingHeader("TRANSFORM"))
-                    {
-                        DrawComponent<C_Position>(e);
-                        DrawComponent<C_Rotation>(e);
-                        DrawComponent<C_Scale>(e);
-                        ImGui.Separator();
-                    }
-                    
-                    if(ImGui.CollapsingHeader("PHYSICS"))
-                    {
-                        DrawComponent<C_Motion>(e);
-                        ImGui.Separator();
-                    }
-
-                    if(ImGui.CollapsingHeader("GRAPHICS"))
-                    {
-                        DrawComponent<C_Camera>(e);
-                        DrawComponent<C_Sprite>(e);
-                        ImGui.Separator();
-                    }
-
-                    if(ImGui.CollapsingHeader("GAMEPLAY"))
-                    {
-                        DrawComponent<C_Health>(e);
-                        DrawComponent<C_PlatformerData>(e);
-                        DrawComponent<C_PlatformerInput>(e);
-                    }*/
 
                     ImGui.EndTabBar();
                 }
