@@ -1,0 +1,11 @@
+{
+	"folders": [
+		{
+			"path": "."
+		},
+		{
+			"path": "..\\flecs-cs\\src\\cs"
+		}
+	],
+	"settings": {}
+}
