@@ -124,9 +124,9 @@ namespace ProjectMono.Core {
             
 
             var camera = World.CreateEntity("Camera");
-            camera.SetComponent(new C_Position(){Position=Vector2.Zero});
-            camera.SetComponent(new C_Rotation());
-            camera.SetComponent(new C_Camera(){Zoom=0.5f});
+            camera.Set(new C_Position(){Position=Vector2.Zero});
+            camera.Set(new C_Rotation());
+            camera.Set(new C_Camera(){Zoom=0.5f});
 
             for(int i = 0; i < 10000; i++) {
                 Entity pochita = World.CreateEntity("Pochita " + i);
@@ -138,13 +138,13 @@ namespace ProjectMono.Core {
 
                 random.NextUnitVector(out var velocity);
 
-                pochita.SetComponent(new C_Position() {Position=position});
-                pochita.SetComponent(new C_Scale() {Scale=Vector2.One*.03f});
-                pochita.SetComponent(new C_Rotation());
-                pochita.SetComponent(new C_PendingForces());
-                //pochita.SetComponent(new C_Gravity() {Gravity = Vector2.UnitY * 10.0f});
-                pochita.SetComponent(new C_Velocity() {Velocity = velocity});
-                pochita.SetComponent(new C_Sprite(1, spriteWidth: 190, spriteHeight: 190));
+                pochita.Set(new C_Position() {Position=position});
+                pochita.Set(new C_Scale() {Scale=Vector2.One*.03f});
+                pochita.Set(new C_Rotation());
+                pochita.Set(new C_PendingForces());
+                //pochita.Set(new C_Gravity() {Gravity = Vector2.UnitY * 10.0f});
+                pochita.Set(new C_Velocity() {Velocity = velocity});
+                pochita.Set(new C_Sprite(1, spriteWidth: 190, spriteHeight: 190));
             }
             /*
             player.Attach(new C_Name("Player"));
