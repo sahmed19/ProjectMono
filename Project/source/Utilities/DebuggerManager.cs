@@ -221,20 +221,20 @@ public static class DebuggerManager {
                 {
                     if(ImGui.CollapsingHeader("Transform"))
                     {
-                        if(e.HasComponent<C_Position>()) DragFloat2("Position", ref e.GetComponent<C_Position>().Position, 0.1f);
-                        if(e.HasComponent<C_Scale>()) DragFloat2("Scale", ref e.GetComponent<C_Scale>().Scale, 0.1f);
-                        if(e.HasComponent<C_Rotation>()) ImGui.SliderAngle("Rotation", ref e.GetComponent<C_Rotation>().Angle, 0.0f, 360.0f);
+                        if(e.Has<C_Position>()) DragFloat2("Position", ref e.GetComponent<C_Position>().Position, 0.1f);
+                        if(e.Has<C_Scale>()) DragFloat2("Scale", ref e.GetComponent<C_Scale>().Scale, 0.1f);
+                        if(e.Has<C_Rotation>()) ImGui.SliderAngle("Rotation", ref e.GetComponent<C_Rotation>().Angle, 0.0f, 360.0f);
                     }
 
                     if(ImGui.CollapsingHeader("Physics"))
                     {
-                        if(e.HasComponent<C_Velocity>()) DragFloat2("Position", ref e.GetComponent<C_Position>().Position, 0.1f);
-                        if(e.HasComponent<C_TerminalVelocity>()) DragFloat2("Scale", ref e.GetComponent<C_Scale>().Scale, 0.1f);
+                        if(e.Has<C_Velocity>()) DragFloat2("Position", ref e.GetComponent<C_Position>().Position, 0.1f);
+                        if(e.Has<C_TerminalVelocity>()) DragFloat2("Scale", ref e.GetComponent<C_Scale>().Scale, 0.1f);
                     }
                     
                     if(ImGui.CollapsingHeader("Graphics"))
                     {
-                        if(e.HasComponent<C_Camera>()) ImGui.DragFloat("Camera Zoom", ref e.GetComponent<C_Camera>().Zoom, 0.1f, 0.01f, 3.0f);
+                        if(e.Has<C_Camera>()) ImGui.DragFloat("Camera Zoom", ref e.GetComponent<C_Camera>().Zoom, 0.1f, 0.01f, 3.0f);
                     }
 
                     ImGui.EndTabBar();
