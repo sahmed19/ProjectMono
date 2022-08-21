@@ -11,8 +11,10 @@ namespace ProjectMono.Maps {
     public static class S_Tilemap
     {
         
-        public static void InitializeMap(string rootDir, string mapName, World world, int xOffset, int yOffset)
+        public static void InitializeMap(ProjectMonoApp game, string mapName, int xOffset, int yOffset)
         {
+            string rootDir = game.RootDir;
+            World world = game.World;
             var map = new TiledMap(rootDir + "/data/tilemaps/" + mapName + ".tmx");
             var tilesets = map.GetTiledTilesets(rootDir + "/data/tilesets/"); // DO NOT forget the / at the end
             var tileLayers = map.Layers.Where(x => x.type == TiledLayerType.TileLayer);

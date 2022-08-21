@@ -16,7 +16,6 @@ using ProjectMono.Debugging;
 using MonoGame.Extended.ViewportAdapters;
 
 using Flecs;
-using static flecs_hub.flecs;
 using ImGuiNET.XNA;
 
 namespace ProjectMono.Core {
@@ -34,6 +33,7 @@ namespace ProjectMono.Core {
         public const int BASE_RESOLUTION_WIDTH = 320;
         public const int BASE_RESOLUTION_HEIGHT = 180;
         public float TotalGameTime {get; private set;}
+        public string RootDir => Content.RootDirectory;
 
         //int m_PlayerID;
 
@@ -76,57 +76,11 @@ namespace ProjectMono.Core {
             RegisterTexture("icon_pochita", "graphics/characters/");
             RegisterTexture("tileset_twilight_castle","graphics/maps/");
 
-            //Register components
-            World.RegisterComponent<C_Position>();
-            World.RegisterComponent<C_Rotation>();
-            World.RegisterComponent<C_Scale>();
-
-            World.RegisterComponent<C_PendingForces>();
-            World.RegisterComponent<C_Velocity>();
-            World.RegisterComponent<C_Gravity>();
-            World.RegisterComponent<C_TerminalVelocity>();
-            World.RegisterComponent<C_AngularVelocity>();
-            World.RegisterComponent<C_Friction>();
-            World.RegisterComponent<C_Mass>();
-
-            World.RegisterComponent<C_Camera>();
-            
-            World.RegisterComponent<C_PlatformerData>();
-            World.RegisterComponent<C_PlatformerInput>();
-
-            World.RegisterComponent<C_Health>();
-            World.RegisterComponent<C_Sprite>();
-            World.RegisterComponent<C_SpriteLayer>();
-            
-            //Register systems
-
-            World.RegisterSystem(S_Physics.ApplyGravityToPendingForces, EcsOnUpdate,
-              $"{typeof(C_PendingForces)}, {typeof(C_Gravity)}");
-
-            World.RegisterSystem(S_Physics.ApplyPendingForcesToVelocity, EcsOnUpdate,
-              $"{typeof(C_Velocity)}, {typeof(C_PendingForces)}, ?{typeof(C_Friction)}, ?{typeof(C_Mass)}");
-
-            World.RegisterSystem(S_Physics.ClampVelocityXToTerminalVelocity, EcsOnUpdate,
-              $"{typeof(C_Velocity)}, {typeof(C_TerminalVelocity)}");
-
-            World.RegisterSystem(S_Physics.ApplyVelocityToPosition, EcsOnUpdate,
-              $"{typeof(C_Position)}, {typeof(C_Velocity)}");
-            
-            World.RegisterSystem(S_Collision.BounceOffScreenEdge, EcsOnUpdate,
-              $"{typeof(C_Position)}, {typeof(C_Velocity)}");
-              
-            World.RegisterSystem(S_Physics.RotateTowardVelocityDirection, EcsOnUpdate,
-              $"{typeof(C_Rotation)}, {typeof(C_Velocity)}");
-
-            World.RegisterSystem(S_Camera.UpdateCameraPosition, EcsPostUpdate,
-              $"{typeof(C_Camera)}, {typeof(C_Position)}, ?{typeof(C_Rotation)}");
-  
-            World.RegisterSystem(S_SpriteRendering.PendSpritesForDraw, EcsPostUpdate, 
-              $"{typeof(C_Sprite)}, {typeof(C_SpriteLayer)}, {typeof(C_Position)}, ?{typeof(C_Rotation)}, ?{typeof(C_Scale)}");
-            
+            WorldData.RegisterComponents(this);
+            WorldData.RegisterSystems(this);
 
             //Register tilemap
-            S_Tilemap.InitializeMap(Content.RootDirectory, "test_map", World, -15, -15);
+            S_Tilemap.InitializeMap(this, "test_map", -15, -15);
 
             Random random = new Random();
             var pochitaPrefab = World.CreatePrefab("PochitaPrefab");
@@ -138,7 +92,6 @@ namespace ProjectMono.Core {
 
             for(int i = 0; i < 1000; i++) {
                 Entity pochita = World.CreateEntity("Pochita " + i);
-                //pochita.IsA(pochitaPrefab);
 
                 Vector2 position = new Vector2(
                     MathHelper.Lerp(-10.0f, 10.0f, (float) random.NextDouble()),

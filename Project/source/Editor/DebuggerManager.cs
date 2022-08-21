@@ -101,7 +101,6 @@ namespace ProjectMono.Debugging {
             if(OPEN_DEMO_WINDOW)        ImGui.ShowDemoWindow();
             
         }
-
         static void GUI_Settings(ProjectMonoApp game, ref bool open) {
             ImGui.SetNextWindowSize(new Vector2(500, 440), ImGuiCond.FirstUseEver);
             if(ImGui.Begin("General Settings", ref open))
@@ -188,7 +187,6 @@ namespace ProjectMono.Debugging {
                 ImGui.End();
             }
         }
-
         const int MAX_DISPLAYABLE_ENTITIES = 2048;
         static Entity[] ALL_ENTITIES = new Entity[MAX_DISPLAYABLE_ENTITIES];
         static int SELECTED_ENTITY_INDEX = 0;
@@ -207,9 +205,7 @@ namespace ProjectMono.Debugging {
                 if(CURRENT_NUM_ENTITIES>=MAX_DISPLAYABLE_ENTITIES) break;
             }
         }
-
         const float FOCUS_ADJUSTMENT_SPEED = 1.0f;
-
         public static void CameraFocusEntity(float deltaTime)
         {
             if(SELECTED_ENTITY_INDEX<0) return;
@@ -217,9 +213,7 @@ namespace ProjectMono.Debugging {
             //S_Camera.SLerp_ActualCameraPosition(targetPos.Position, deltaTime * FOCUS_ADJUSTMENT_SPEED, targetRot.Angle, 3.0f);
             S_Camera.SetActualCameraPosition(targetPos.Position, 0.0f, 3.0f);
         }
-
         static bool FOCUS_SELECTED;
-
         static void GUI_EntityBrowser(ProjectMonoApp game, ref bool open) {
             ImGui.SetNextWindowSize(new Vector2(800, 440), ImGuiCond.FirstUseEver);
             
@@ -250,6 +244,15 @@ namespace ProjectMono.Debugging {
                 
                 ImGui.End();
             }    
+        }
+        static void GUI_ContentView(ProjectMonoApp game, ref bool open)
+        {
+            ImGui.SetNextWindowSize(new Vector2(800, 440), ImGuiCond.FirstUseEver);
+
+            if(ImGui.Begin("Content View", ref open))
+            {
+                
+            }
         }
 
         static void GUI_EntityInspector(ProjectMonoApp game, ref bool open)
@@ -300,7 +303,6 @@ namespace ProjectMono.Debugging {
                 vector = vec.SysVec2MonoVec();
             }
         }
-
 
         #endregion
 
