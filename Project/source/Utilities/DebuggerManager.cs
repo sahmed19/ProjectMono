@@ -228,8 +228,8 @@ public static class DebuggerManager {
 
                     if(ImGui.CollapsingHeader("Physics"))
                     {
-                        if(e.Has<C_Velocity>()) DragFloat2("Position", ref e.GetComponent<C_Position>().Position, 0.1f);
-                        if(e.Has<C_TerminalVelocity>()) DragFloat2("Scale", ref e.GetComponent<C_Scale>().Scale, 0.1f);
+                        if(e.Has<C_Velocity>()) DragFloat2("Velocity", ref e.GetComponent<C_Velocity>().Velocity, 0.1f);
+                        if(e.Has<C_TerminalVelocity>()) ImGui.DragFloat("Terminal Velocity", ref e.GetComponent<C_TerminalVelocity>().TerminalVelocity, 0.1f);
                     }
                     
                     if(ImGui.CollapsingHeader("Graphics"))
