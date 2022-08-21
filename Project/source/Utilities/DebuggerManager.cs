@@ -7,6 +7,7 @@ using ProjectMono.Physics;
 using ImGuiNET.XNA;
 
 using Flecs;
+using ProjectMono.Graphics;
 
 namespace ProjectMono.Debugging {
 
@@ -211,11 +212,10 @@ namespace ProjectMono.Debugging {
 
         public static void CameraFocusEntity(float deltaTime)
         {
-            if(SELECTED_ENTITY_INDEX<=0) return;
+            if(SELECTED_ENTITY_INDEX<0) return;
             var targetPos = GetSelectedEntity().GetComponent<C_Position>();
-            var targetRot = GetSelectedEntity().GetComponent<C_Rotation>();
             //S_Camera.SLerp_ActualCameraPosition(targetPos.Position, deltaTime * FOCUS_ADJUSTMENT_SPEED, targetRot.Angle, 3.0f);
-            S_Camera.SetActualCameraPosition(targetPos.Position, targetRot.Angle, 3.0f);
+            S_Camera.SetActualCameraPosition(targetPos.Position, 0.0f, 3.0f);
         }
 
         static bool FOCUS_SELECTED;
@@ -230,10 +230,9 @@ namespace ProjectMono.Debugging {
                 if(ImGui.Button("Refresh", new Vector2(70, 30)) || CURRENT_NUM_ENTITIES==0)
                     RefreshEntityList(game);
                 ImGui.SameLine();
-                if(ImGui.Checkbox("Focus", ref FOCUS_SELECTED))
-                {
-                    
-                }
+                if(ImGui.Checkbox("Focus", ref FOCUS_SELECTED)) { }
+
+                Entity clickedEntity = GetSelectedEntity();
 
                 //Navigate selection with up and down
                 if(ImGui.IsKeyPressed(ImGuiKey.DownArrow)) SELECTED_ENTITY_INDEX++;
@@ -243,9 +242,8 @@ namespace ProjectMono.Debugging {
 
                 //ImGui.BeginChild("left pane", new Vector2(200, 0), true);
                 for (int i = 0; i < CURRENT_NUM_ENTITIES; i++)
-                {
+                {    
                     var name = ALL_ENTITIES[i].Name();
-                    
                     if (ImGui.Selectable((""+i).PadLeft(3, '0') + ": " + name, SELECTED_ENTITY_INDEX == i))
                         SELECTED_ENTITY_INDEX = i;
                 }
@@ -281,6 +279,14 @@ namespace ProjectMono.Debugging {
                 if(ImGui.CollapsingHeader("Graphics"))
                 {
                     if(e.Has<C_Camera>()) ImGui.DragFloat("Camera Zoom", ref e.GetComponent<C_Camera>().Zoom, 0.1f, 0.01f, 3.0f);
+
+                    if(e.Has<C_Sprite>()) 
+                    {
+                        ref var sprite = ref e.GetComponent<C_Sprite>();
+                        ImGui.InputInt("Sprite Texture Index", ref sprite.TextureIndex);
+                        ImGui.InputInt2("Sprite Size", ref sprite.SpriteWidth);
+                        if(ImGui.InputInt("Sprite Frame", ref sprite.Frame)) sprite.SetRectangle();
+                    }
                 }
 
                 ImGui.EndTabBar();

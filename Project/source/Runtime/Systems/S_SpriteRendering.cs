@@ -1,7 +1,9 @@
+using System.Linq;
 using System.Collections.Generic;
 using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Graphics;
 using ProjectMono.Core;
+using ProjectMono.Debugging;
 using Flecs;
 
 namespace ProjectMono.Graphics {
@@ -24,48 +26,57 @@ namespace ProjectMono.Graphics {
 
         const int MAX_PENDING_SPRITES = 65536;
         
-        static int CURRENT_NUM_SPRITES;
+        static int NUM_SPRITES=0;
+
+        static int SELECTED_SPRITE=-1;
 
         public static void PendSpritesForDraw(Iterator it)
         {
-            CURRENT_NUM_SPRITES = it.Count;
 
             bool rotationSet = false, scaleSet = false;
 
             var spriteIter = it.Field<C_Sprite>(1);
-            var posIter = it.Field<C_Position>(2);
-            var rotIter = it.Field<C_Rotation>(3);
-            var scaleIter = it.Field<C_Scale>(4);
+            var sprLayerIter = it.Field<C_SpriteLayer>(2);
+            var posIter = it.Field<C_Position>(3);
+            var rotIter = it.Field<C_Rotation>(4);
+            var scaleIter = it.Field<C_Scale>(5);
 
-            if(it.FieldIsSet(3)) rotationSet=true;
-            if(it.FieldIsSet(4)) scaleSet=true;
-            
-            //var transformIter = it.Field<C_Transform2>(2);
+            if(it.FieldIsSet(4)) rotationSet=true;
+            if(it.FieldIsSet(5)) scaleSet=true;
 
-            for(int i = 0; i < CURRENT_NUM_SPRITES; i++)
+            for(int i = 0; i < it.Count; i++)
             {
                 var sprite = spriteIter[i];
+                var sprLayer = sprLayerIter[i];
                 Vector2 pos = posIter[i].Position;
                 float rot = rotationSet? rotIter[i].Angle : 0.0f;
                 Vector2 scl = scaleSet? scaleIter[i].Scale : Vector2.One;
 
-                m_PendingSprites[i] = new PendingSprite{
+                bool selected = it.Entity(i).Equals(DebuggerManager.GetSelectedEntity());
+                if(selected)
+                    SELECTED_SPRITE=NUM_SPRITES;
+
+                m_PendingSprites[NUM_SPRITES] = new PendingSprite{
                     TextureID=sprite.TextureIndex,
                     Position=pos * WorldData.PIXELS_PER_UNIT,
                     SourceRectangle=sprite.Rectangle,
                     Color=Color.White,
                     Angle=rot,
-                    Origin=sprite.GetOrigin(),
+                    Origin=sprLayer.GetOrigin(sprite.SpriteWidth, sprite.SpriteHeight),
                     Scale=scl,
-                    SpriteEffects=sprite.FlipX?SpriteEffects.FlipHorizontally : SpriteEffects.None,
-                    LayerDepth=0.1f
+                    SpriteEffects=sprite.FlipX? SpriteEffects.FlipHorizontally : SpriteEffects.None,
+                    LayerDepth=0.9f
                 };
+                
+                NUM_SPRITES++;
             }
+
         }
 
-        public static void DrawPendingSprites(ProjectMonoApp game) {
+        public static void DrawPendingSprites(ProjectMonoApp game)
+        {
             
-            for(var i = 0; i < CURRENT_NUM_SPRITES; i++) {
+            for(var i = 0; i < NUM_SPRITES; i++) {
                 var pendingSprite = m_PendingSprites[i];
                 game.SpriteBatch.Draw(
                     TextureDatabase.GetTexture(pendingSprite.TextureID),
@@ -78,7 +89,18 @@ namespace ProjectMono.Graphics {
                     pendingSprite.SpriteEffects,
                     pendingSprite.LayerDepth
                 );
+                if(SELECTED_SPRITE==i)
+                {
+                    PrimitiveDrawer.DrawPulsingOutline(game, new Rectangle(
+                        (int) pendingSprite.Position.X, 
+                        (int) pendingSprite.Position.Y, 
+                        (int) (pendingSprite.SourceRectangle.Width * pendingSprite.Scale.X), 
+                        (int) (pendingSprite.SourceRectangle.Height * pendingSprite.Scale.Y)
+                        ), Color.Red, 
+                        new Vector2(pendingSprite.Origin.X / pendingSprite.SourceRectangle.Width, pendingSprite.Origin.Y / pendingSprite.SourceRectangle.Height));
+                }
             }
+            NUM_SPRITES=0;
 
         }
 

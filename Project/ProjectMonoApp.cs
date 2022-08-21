@@ -10,6 +10,7 @@ using ProjectMono.Input;
 using ProjectMono.Physics;
 using ProjectMono.Graphics;
 using ProjectMono.Gameplay;
+using ProjectMono.Maps;
 using ProjectMono.Debugging;
 
 using MonoGame.Extended.ViewportAdapters;
@@ -32,6 +33,7 @@ namespace ProjectMono.Core {
         public static ProjectMonoApp INSTANCE;
         public const int BASE_RESOLUTION_WIDTH = 320;
         public const int BASE_RESOLUTION_HEIGHT = 180;
+        public float TotalGameTime {get; private set;}
 
         //int m_PlayerID;
 
@@ -55,6 +57,7 @@ namespace ProjectMono.Core {
             Camera = new OrthographicCamera(viewportAdapter);
             Camera.Zoom=0.5f;
             
+            PrimitiveDrawer.Initialize(this);
             //IMGUI init
             DebuggerManager.Initialize(out m_IMGUI, this);
             base.Initialize();
@@ -71,6 +74,7 @@ namespace ProjectMono.Core {
             void RegisterTexture(string name, string path) => TextureDatabase.RegisterTexture(name, Content.Load<Texture2D>(path + name));
             RegisterTexture("spritesheet_player", "graphics/characters/");
             RegisterTexture("icon_pochita", "graphics/characters/");
+            RegisterTexture("tileset_twilight_castle","graphics/maps/");
 
             //Register components
             World.RegisterComponent<C_Position>();
@@ -92,6 +96,7 @@ namespace ProjectMono.Core {
 
             World.RegisterComponent<C_Health>();
             World.RegisterComponent<C_Sprite>();
+            World.RegisterComponent<C_SpriteLayer>();
             
             //Register systems
 
@@ -117,22 +122,23 @@ namespace ProjectMono.Core {
               $"{typeof(C_Camera)}, {typeof(C_Position)}, ?{typeof(C_Rotation)}");
   
             World.RegisterSystem(S_SpriteRendering.PendSpritesForDraw, EcsPostUpdate, 
-              $"{typeof(C_Sprite)}, {typeof(C_Position)}, ?{typeof(C_Rotation)}, ?{typeof(C_Scale)}");
+              $"{typeof(C_Sprite)}, {typeof(C_SpriteLayer)}, {typeof(C_Position)}, ?{typeof(C_Rotation)}, ?{typeof(C_Scale)}");
             
+
+            //Register tilemap
+            S_Tilemap.InitializeMap(Content.RootDirectory, "test_map", World, -15, -15);
 
             Random random = new Random();
-
             var pochitaPrefab = World.CreatePrefab("PochitaPrefab");
             
-
             var camera = World.CreateEntity("Camera");
             camera.Set(new C_Position(){Position=Vector2.Zero});
             camera.Set(new C_Rotation());
             camera.Set(new C_Camera(){Zoom=0.5f});
 
-            for(int i = 0; i < 1; i++) {
+            for(int i = 0; i < 1000; i++) {
                 Entity pochita = World.CreateEntity("Pochita " + i);
-                pochita.IsA(pochitaPrefab);
+                //pochita.IsA(pochitaPrefab);
 
                 Vector2 position = new Vector2(
                     MathHelper.Lerp(-10.0f, 10.0f, (float) random.NextDouble()),
@@ -144,9 +150,9 @@ namespace ProjectMono.Core {
                 pochita.Set(new C_Scale() {Scale=Vector2.One*.03f});
                 pochita.Set(new C_Rotation());
                 pochita.Set(new C_PendingForces());
-                //pochita.Set(new C_Gravity() {Gravity = Vector2.UnitY * 10.0f});
                 pochita.Set(new C_Velocity() {Velocity = velocity});
                 pochita.Set(new C_Sprite(1, spriteWidth: 190, spriteHeight: 190));
+                pochita.Set(new C_SpriteLayer());
             }
             /*
             player.Attach(new C_Name("Player"));
@@ -162,6 +168,7 @@ namespace ProjectMono.Core {
         {
             TOTAL_FRAME_COUNT++;
             float deltaTime = (float) gameTime.ElapsedGameTime.TotalSeconds;
+            TotalGameTime = (float) gameTime.TotalGameTime.TotalSeconds;
 
             if (GamePad.GetState(PlayerIndex.One).Buttons.Back == ButtonState.Pressed || Keyboard.GetState().IsKeyDown(Keys.Escape))
                 Exit();
@@ -181,10 +188,9 @@ namespace ProjectMono.Core {
             GraphicsDevice.Clear(Color.DarkTurquoise);
             m_IMGUI.BeforeLayout(gameTime);
             DebuggerManager.GUI_DebuggerDraw(this, deltaTime);
-
             var transformMatrix = Camera.GetViewMatrix();
             SpriteBatch.Begin(
-                SpriteSortMode.Immediate,
+                SpriteSortMode.BackToFront,
                 BlendState.AlphaBlend,
                 transformMatrix: transformMatrix,
                 samplerState: SamplerState.PointWrap);

@@ -81,7 +81,8 @@ namespace ProjectMono.Physics {
             }
         }
         
-        public static void RotateTowardVelocityDirection(Iterator it) {
+        public static void RotateTowardVelocityDirection(Iterator it)
+        {
 
             var rotIter = it.Field<C_Rotation>(1);
             var velIter = it.Field<C_Velocity>(2);
@@ -93,6 +94,30 @@ namespace ProjectMono.Physics {
                 rot.Angle = (float) Math.Atan2(vel.Y, vel.X);
             }
 
+        }
+
+        public static Entity GetEntityClosestToPoint(World world, Vector2 point)
+        {
+            var it = world.EntityIterator<C_Position>();
+
+            Entity champ = default;
+            float lowestSqrDist = float.MaxValue;
+
+            while(it.HasNext()) {
+                var posIter = it.Field<C_Position>(1);
+
+                for(int i = 0; i < it.Count; i++)
+                {
+                    float dist = Vector2.DistanceSquared(posIter[i].Position, point);
+                    if(dist < lowestSqrDist)
+                    {
+                        lowestSqrDist=dist;
+                        champ=it.Entity(i);
+                    }
+                }
+            }
+
+            return champ;
         }
     }
 
