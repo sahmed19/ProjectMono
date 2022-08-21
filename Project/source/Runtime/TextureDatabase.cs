@@ -1,6 +1,7 @@
 using System.Diagnostics;
 using Microsoft.Xna.Framework.Graphics;
 using System.Collections.Generic;
+using ProjectMono.Debugging;
 
 namespace ProjectMono.Graphics {
     public static class TextureDatabase

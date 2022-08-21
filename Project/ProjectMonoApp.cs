@@ -10,6 +10,8 @@ using ProjectMono.Input;
 using ProjectMono.Physics;
 using ProjectMono.Graphics;
 using ProjectMono.Gameplay;
+using ProjectMono.Debugging;
+
 using MonoGame.Extended.ViewportAdapters;
 
 using Flecs;
@@ -53,8 +55,8 @@ namespace ProjectMono.Core {
             Camera = new OrthographicCamera(viewportAdapter);
             Camera.Zoom=0.5f;
             
-            m_IMGUI = new ImGuiRenderer(this);
-            m_IMGUI.RebuildFontAtlas();
+            //IMGUI init
+            DebuggerManager.Initialize(out m_IMGUI, this);
             base.Initialize();
         }
 
@@ -111,7 +113,7 @@ namespace ProjectMono.Core {
             World.RegisterSystem(S_Physics.RotateTowardVelocityDirection, EcsOnUpdate,
               $"{typeof(C_Rotation)}, {typeof(C_Velocity)}");
 
-            World.RegisterSystem(S_Camera.UpdateCameraPosition, EcsOnUpdate,
+            World.RegisterSystem(S_Camera.UpdateCameraPosition, EcsPostUpdate,
               $"{typeof(C_Camera)}, {typeof(C_Position)}, ?{typeof(C_Rotation)}");
   
             World.RegisterSystem(S_SpriteRendering.PendSpritesForDraw, EcsPostUpdate, 
@@ -128,7 +130,7 @@ namespace ProjectMono.Core {
             camera.Set(new C_Rotation());
             camera.Set(new C_Camera(){Zoom=0.5f});
 
-            for(int i = 0; i < 10000; i++) {
+            for(int i = 0; i < 1; i++) {
                 Entity pochita = World.CreateEntity("Pochita " + i);
                 pochita.IsA(pochitaPrefab);
 
@@ -166,6 +168,7 @@ namespace ProjectMono.Core {
 
             InputManager.Tick(gameTime);
             World.Progress(deltaTime);
+            DebuggerManager.GUI_DebuggerUpdate(this, deltaTime);
             InputManager.LateTick();
 
             base.Update(gameTime);
@@ -173,19 +176,20 @@ namespace ProjectMono.Core {
 
         protected override void Draw(GameTime gameTime)
         {
+            float deltaTime = (float) gameTime.ElapsedGameTime.TotalSeconds;
+
             GraphicsDevice.Clear(Color.DarkTurquoise);
+            m_IMGUI.BeforeLayout(gameTime);
+            DebuggerManager.GUI_DebuggerDraw(this, deltaTime);
+
             var transformMatrix = Camera.GetViewMatrix();
-            
             SpriteBatch.Begin(
                 SpriteSortMode.Immediate,
                 BlendState.AlphaBlend,
                 transformMatrix: transformMatrix,
                 samplerState: SamplerState.PointWrap);
-            m_IMGUI.BeforeLayout(gameTime);
             
             S_SpriteRendering.DrawPendingSprites(this);
-            DebuggerManager.GUI_Debugger(this);
-            
             SpriteBatch.End();
             m_IMGUI.AfterLayout();
         }

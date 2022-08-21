@@ -3,6 +3,7 @@ using ImGuiNET;
 using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Graphics;
 using System.Runtime.InteropServices;
+using ProjectMono.Debugging;
 using Flecs;
 
 namespace ProjectMono.Graphics {
