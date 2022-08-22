@@ -29,9 +29,7 @@ namespace ProjectMono.Debugging
                             ImGui.Separator();
                             for (int i = 0; i < Settings.RESOLUTIONS.Length; i++)
                                 if (ImGui.Selectable(Settings.RESOLUTIONS[i].ToString()))
-                                {
                                     Settings.GRAPHICS_SETTINGS.ResolutionID = i;
-                                }
                             ImGui.EndPopup();
                         }
 

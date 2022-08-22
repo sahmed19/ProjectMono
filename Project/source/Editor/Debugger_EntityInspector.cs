@@ -3,6 +3,7 @@ using Flecs;
 using ImGuiNET;
 using ProjectMono.Core;
 using ProjectMono.Graphics;
+using ProjectMono.Maps;
 using ProjectMono.Physics;
 
 namespace ProjectMono.Debugging
@@ -18,6 +19,33 @@ namespace ProjectMono.Debugging
                 Entity e = GetSelectedEntity();
 
                 ImGui.Text(e.Name());
+                
+                ImGui.SameLine();
+                
+                
+                if(ImGui.Button("Add Component"))
+                    ImGui.OpenPopup("add_component");
+                    
+                if(ImGui.BeginPopup("add_component"))
+                {
+                    ImGui.Text("Component");
+                    ImGui.Separator();
+                    for (int i = 0; i < WorldData.ALL_COMPONENT_TYPES.Count; i++)
+                    {
+                        var type = WorldData.ALL_COMPONENT_TYPES[i];
+                        var typeName = game.World.GetFlecsTypeName(type);
+                        typeName = typeName.Substring(typeName.IndexOf("C_"));
+                        
+                        ImGui.BeginDisabled(e.Has(type));
+                        {
+                            if (ImGui.Selectable(typeName))
+                                e.Set(type);
+                            ImGui.EndDisabled();
+                        }
+                    }
+                    ImGui.EndPopup();
+                }
+
                 ImGui.Separator();
                 
                 if(ImGui.CollapsingHeader("Transform"))
@@ -30,6 +58,9 @@ namespace ProjectMono.Debugging
                 if(ImGui.CollapsingHeader("Physics"))
                 {
                     if(e.Has<C_Velocity>()) InputFloat2("Velocity", ref e.GetComponent<C_Velocity>().Velocity, 0.1f);
+                    if(e.Has<C_PendingForces>()) InputFloat2("Pending Forces", ref e.GetComponent<C_PendingForces>().PendingForces, 0.1f);
+                    if(e.Has<C_Gravity>()) InputFloat2("Gravity", ref e.GetComponent<C_Gravity>().Gravity, 0.1f);
+                    if(e.Has<C_Mass>()) ImGui.InputFloat("Mass", ref e.GetComponent<C_Mass>().Mass, 0.1f);
                     if(e.Has<C_TerminalVelocity>()) ImGui.InputFloat("Terminal Velocity", ref e.GetComponent<C_TerminalVelocity>().TerminalVelocity, 0.1f);
                 }
                 

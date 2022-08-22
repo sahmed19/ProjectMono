@@ -1,31 +1,67 @@
+using System.Linq;
+using System;
+using System.Reflection;
+using System.Collections.Generic;
 using ProjectMono.Core;
 using ProjectMono.Physics;
 using ProjectMono.Graphics;
+using ProjectMono.Debugging;
 using static flecs_hub.flecs;
-using System.Reflection;
 using Flecs;
-
 
 namespace ProjectMono.Maps
 {
     public static class WorldData
     {
         public readonly static int PIXELS_PER_UNIT = 16;
+        public static List<Type> ALL_COMPONENT_TYPES;
+
+        public static void Set(this Entity e, Type ComponentType)
+        {
+            if(!typeof(IComponent).IsAssignableFrom(ComponentType))
+                throw new System.ArgumentException("Type " + ComponentType.Name + " is not an IComponent!");
+              
+            var method = typeof(Entity)
+              .GetMethods().First(x=>
+                  x.Name=="Set" &&
+                  x.IsGenericMethod &&
+                  x.GetGenericArguments().Length==1 &&
+                  x.GetParameters().Length==1
+              ).MakeGenericMethod(ComponentType);
+
+              method.Invoke(e, new object[1] {default});
+        }
+
+        public static bool Has(this Entity e, Type ComponentType)
+        {
+            if(!typeof(IComponent).IsAssignableFrom(ComponentType))
+                throw new System.ArgumentException("Type " + ComponentType.Name + " is not an IComponent!");
+              
+            var method = typeof(Entity)
+              .GetMethods().First(x=>
+                  x.Name=="Has" &&
+                  x.IsGenericMethod &&
+                  x.GetGenericArguments().Length==1
+              ).MakeGenericMethod(ComponentType);
+
+              return (bool) method.Invoke(e, new object[0]{});
+
+        }
 
         public static void RegisterComponents(ProjectMonoApp game)
         {
             var world = game.World;
             Assembly assembly = typeof(ProjectMonoApp).Assembly;
-            var allComponentTypes = ReflectionHelper.FindAllDerivedTypes<IComponent>(assembly);
+            ALL_COMPONENT_TYPES = ReflectionHelper.FindAllDerivedTypes<IComponent>(assembly);
 
-            foreach(var type in allComponentTypes)
+            foreach (var type in ALL_COMPONENT_TYPES)
             {
                 typeof(World)
                   .GetMethod("RegisterComponent")
                   .MakeGenericMethod(type)
-                  .Invoke(world, new object[1] {null});
+                  .Invoke(world, new object[1] { null });
             }
-            
+
             /*
             world.RegisterComponent<C_Position>();
             world.RegisterComponent<C_Rotation>();
@@ -65,17 +101,17 @@ namespace ProjectMono.Maps
 
             world.RegisterSystem(S_Physics.ApplyVelocityToPosition, EcsOnUpdate,
               $"{typeof(C_Position)}, {typeof(C_Velocity)}");
-            
+
             world.RegisterSystem(S_Collision.BounceOffScreenEdge, EcsOnUpdate,
               $"{typeof(C_Position)}, {typeof(C_Velocity)}");
-              
+
             world.RegisterSystem(S_Physics.RotateTowardVelocityDirection, EcsOnUpdate,
               $"{typeof(C_Rotation)}, {typeof(C_Velocity)}");
 
             world.RegisterSystem(S_Camera.UpdateCameraPosition, EcsPostUpdate,
               $"{typeof(C_Camera)}, {typeof(C_Position)}, ?{typeof(C_Rotation)}");
-  
-            world.RegisterSystem(S_SpriteRendering.PendSpritesForDraw, EcsPostUpdate, 
+
+            world.RegisterSystem(S_SpriteRendering.PendSpritesForDraw, EcsPostUpdate,
               $"{typeof(C_Sprite)}, {typeof(C_SpriteLayer)}, {typeof(C_Position)}, ?{typeof(C_Rotation)}, ?{typeof(C_Scale)}, ?{typeof(C_Color)}");
         }
 

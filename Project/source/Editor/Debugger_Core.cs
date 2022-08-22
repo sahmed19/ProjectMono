@@ -25,10 +25,11 @@ namespace ProjectMono.Debugging
 
         
 
-        public static void Print(string message, MessageType messageType = MessageType.SYSTEM) {
-            if(!DEBUG_MESSAGES_ENABLED) return;
-            if(!m_EnabledMessageTypes.HasFlag(messageType)) return;
+        public static bool Print(string message, MessageType messageType = MessageType.SYSTEM) {
+            if(!DEBUG_MESSAGES_ENABLED) return false;
+            if(!m_EnabledMessageTypes.HasFlag(messageType)) return false;
             Debug.WriteLine(message);
+            return true;
         }
 
         #region IMGUI
