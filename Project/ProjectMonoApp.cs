@@ -78,16 +78,17 @@ namespace ProjectMono.Core {
             WorldData.RegisterComponents(this);
             WorldData.RegisterSystems(this);
 
-            //Register tilemap
-            S_Tilemap.InitializeMap(this, "test_map", -15, -15);
-
-            Random random = new Random();
-            var pochitaPrefab = World.CreatePrefab("PochitaPrefab");
             
             var camera = World.CreateEntity("Camera");
             camera.Set(new C_Position(){Position=Vector2.Zero});
             camera.Set(new C_Rotation());
             camera.Set(new C_Camera(){Zoom=0.5f});
+
+            //Register tilemap
+            S_Tilemap.InitializeMap(this, "test_map", -15, -15);
+
+            Random random = new Random();
+            var pochitaPrefab = World.CreatePrefab("PochitaPrefab");
 
             for(int i = 0; i < 1000; i++) {
                 Entity pochita = World.CreateEntity("Pochita " + i);
@@ -98,13 +99,14 @@ namespace ProjectMono.Core {
 
                 random.NextUnitVector(out var velocity);
 
-                pochita.Set(new C_Position() {Position=position});
-                pochita.Set(new C_Scale() {Scale=Vector2.One*.03f});
-                pochita.Set(new C_Rotation());
                 pochita.Set(new C_PendingForces());
                 pochita.Set(new C_Velocity() {Velocity = velocity});
                 pochita.Set(new C_Sprite(1, spriteWidth: 190, spriteHeight: 190));
+                pochita.Set(new C_Color(){Color=Color.White});
                 pochita.Set(new C_SpriteLayer());
+                pochita.Set(new C_Position() {Position=position});
+                pochita.Set(new C_Scale() {Scale=Vector2.One*.03f});
+                pochita.Set(new C_Rotation());
             }
             /*
             player.Attach(new C_Name("Player"));

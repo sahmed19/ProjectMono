@@ -37,22 +37,22 @@ namespace ProjectMono.Graphics {
             var spriteIter = it.Field<C_Sprite>(1);
             var sprLayerIter = it.Field<C_SpriteLayer>(2);
             var posIter = it.Field<C_Position>(3);
-            var colIter = it.Field<C_Color>(4);
-            var rotIter = it.Field<C_Rotation>(5);
-            var scaleIter = it.Field<C_Scale>(6);
+            var rotIter = it.Field<C_Rotation>(4);
+            var scaleIter = it.Field<C_Scale>(5);
+            var colIter = it.Field<C_Color>(6);
 
-            if(it.FieldIsSet(4)) colSet=true;
-            if(it.FieldIsSet(5)) rotationSet=true;
-            if(it.FieldIsSet(6)) scaleSet=true;
+            if(it.FieldIsSet(4)) rotationSet=true;
+            if(it.FieldIsSet(5)) scaleSet=true;
+            if(it.FieldIsSet(6)) colSet=true;
 
             for(int i = 0; i < it.Count; i++)
             {
                 var sprite = spriteIter[i];
                 var sprLayer = sprLayerIter[i];
                 Vector2 pos = posIter[i].Position;
-                Color col = colSet? colIter[i].Color : Color.White;
                 float rot = rotationSet? rotIter[i].Angle : 0.0f;
                 Vector2 scl = scaleSet? scaleIter[i].Scale : Vector2.One;
+                Color col = colSet? colIter[i].Color : Color.White;
 
                 bool selected = it.Entity(i).Equals(MonoDebugger.GetSelectedEntity());
                 if(selected)
@@ -72,7 +72,6 @@ namespace ProjectMono.Graphics {
                 
                 NUM_SPRITES++;
             }
-
         }
 
         public static void DrawPendingSprites(ProjectMonoApp game)

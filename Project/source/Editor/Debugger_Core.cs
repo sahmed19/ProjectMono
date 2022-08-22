@@ -43,7 +43,8 @@ namespace ProjectMono.Debugging
             OPEN_DEMO_WINDOW = false,
             OPEN_CONTENT_VIEW = true;
 
-        public static void Initialize(out ImGuiRenderer renderer, Microsoft.Xna.Framework.Game game) {
+        public static void Initialize(out ImGuiRenderer renderer, Microsoft.Xna.Framework.Game game)
+        {
             renderer = new ImGuiRenderer(game);   
             renderer.RebuildFontAtlas();
             ImGui.GetIO().ConfigFlags |= ImGuiConfigFlags.DockingEnable;

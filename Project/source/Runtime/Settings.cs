@@ -33,6 +33,7 @@ public static class Settings
     public static bool GRAPHICS_SETTINGS_HAVE_BEEN_CHANGED => !GRAPHICS_SETTINGS.Equals(m_LastAppliedGraphicsSettings);
     public static string SCREEN_MODE_LABEL => SCREEN_MODE_LABELS[(int) GRAPHICS_SETTINGS.ScreenMode];
 #endregion
+
 #region Audio
     public static AudioSettings DEFAULT_AUDIO_SETTINGS = new AudioSettings(){
         MasterVolume=100,
@@ -41,7 +42,6 @@ public static class Settings
         SystemVolume=100
     };
     public static AudioSettings AUDIO_SETTINGS;
-
 #endregion
 
     

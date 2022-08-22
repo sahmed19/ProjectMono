@@ -33,6 +33,7 @@ namespace ProjectMono.Maps
 
             world.RegisterComponent<C_Health>();
             world.RegisterComponent<C_Sprite>();
+            world.RegisterComponent<C_Color>();
             world.RegisterComponent<C_SpriteLayer>();
         }
 
@@ -61,7 +62,7 @@ namespace ProjectMono.Maps
               $"{typeof(C_Camera)}, {typeof(C_Position)}, ?{typeof(C_Rotation)}");
   
             world.RegisterSystem(S_SpriteRendering.PendSpritesForDraw, EcsPostUpdate, 
-              $"{typeof(C_Sprite)}, {typeof(C_SpriteLayer)}, {typeof(C_Position)}, ?{typeof(C_Rotation)}, ?{typeof(C_Scale)}");
+                $"{typeof(C_Sprite)}, {typeof(C_SpriteLayer)}, {typeof(C_Position)}, ?{typeof(C_Rotation)}, ?{typeof(C_Scale)}, ?{typeof(C_Color)}");
         }
 
     }

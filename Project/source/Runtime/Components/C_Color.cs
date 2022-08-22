@@ -9,5 +9,9 @@ namespace ProjectMono.Graphics
     public struct C_Color : IComponent
     {
         public Color Color;
+        public C_Color() 
+        {
+            Color=Color.White;
+        }
     }
 }

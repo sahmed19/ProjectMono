@@ -1,7 +1,9 @@
+using System.Net.Mime;
 using System.Diagnostics;
 using Microsoft.Xna.Framework.Graphics;
 using System.Collections.Generic;
-using ProjectMono.Debugging;
+using ProjectMono.Core;
+using System.IO;
 
 namespace ProjectMono.Graphics {
     public static class TextureDatabase
@@ -16,6 +18,16 @@ namespace ProjectMono.Graphics {
             m_TextureArray = new Texture2D[MAX_TEXTURES];
             m_TextureName2Index = new Dictionary<string, int>();
             m_TextureCount = 0;
+        }
+
+        public static void MakeEditorSpritesWhite()
+        {
+            string path = ProjectMonoApp.INSTANCE.RootDir + "\\graphics\\editor\\";
+            string [] fileEntries = Directory.GetFiles(path);
+                foreach(string fileName in fileEntries)
+                {
+                    
+                }
         }
 
         //exclusive
