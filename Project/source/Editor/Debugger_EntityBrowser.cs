@@ -57,9 +57,12 @@ namespace ProjectMono.Debugging
                 Entity clickedEntity = GetSelectedEntity();
 
                 //Navigate selection with up and down
-                if(ImGui.IsKeyPressed(ImGuiKey.DownArrow)) SELECTED_ENTITY_INDEX++;
-                else if(ImGui.IsKeyPressed(ImGuiKey.UpArrow)) SELECTED_ENTITY_INDEX--;
-                SELECTED_ENTITY_INDEX = Math.Clamp(SELECTED_ENTITY_INDEX, 0, CURRENT_NUM_ENTITIES-1);
+                if(ImGui.IsWindowFocused(ImGuiFocusedFlags.RootAndChildWindows))
+                {   
+                    if(ImGui.IsKeyPressed(ImGuiKey.DownArrow)) SELECTED_ENTITY_INDEX++;
+                    else if(ImGui.IsKeyPressed(ImGuiKey.UpArrow)) SELECTED_ENTITY_INDEX--;
+                    SELECTED_ENTITY_INDEX = Math.Clamp(SELECTED_ENTITY_INDEX, 0, CURRENT_NUM_ENTITIES-1);   
+                }
 
                 if(ImGui.BeginChild("Entity List", new Vector2(ImGui.GetWindowWidth()-20, 0), true))
                 {

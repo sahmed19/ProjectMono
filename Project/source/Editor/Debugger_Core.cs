@@ -12,7 +12,8 @@ using ProjectMono.Graphics;
 namespace ProjectMono.Debugging
 {
 
-    public static partial class MonoDebugger {
+    public static partial class MonoDebugger 
+    {
 
         public static bool DEBUG_MESSAGES_ENABLED = true;
         static MessageType m_EnabledMessageTypes => 
@@ -22,6 +23,8 @@ namespace ProjectMono.Debugging
         //| MessageType.AUDIO_DEBUG
         ;
 
+        
+
         public static void Print(string message, MessageType messageType = MessageType.SYSTEM) {
             if(!DEBUG_MESSAGES_ENABLED) return;
             if(!m_EnabledMessageTypes.HasFlag(messageType)) return;
@@ -29,6 +32,8 @@ namespace ProjectMono.Debugging
         }
 
         #region IMGUI
+
+        static ImGuiRenderer Renderer;
 
         static bool CtrlShift =>
             ImGui.GetIO().KeyCtrl && 
@@ -45,8 +50,9 @@ namespace ProjectMono.Debugging
 
         public static void Initialize(out ImGuiRenderer renderer, Microsoft.Xna.Framework.Game game)
         {
-            renderer = new ImGuiRenderer(game);   
-            renderer.RebuildFontAtlas();
+            renderer = new ImGuiRenderer(game);  
+            Renderer = renderer; 
+            Renderer.RebuildFontAtlas();
             ImGui.GetIO().ConfigFlags |= ImGuiConfigFlags.DockingEnable;
         }
 
