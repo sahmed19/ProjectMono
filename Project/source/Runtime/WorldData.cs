@@ -1,8 +1,9 @@
 using ProjectMono.Core;
-using ProjectMono.Gameplay;
 using ProjectMono.Physics;
 using ProjectMono.Graphics;
 using static flecs_hub.flecs;
+using System.Reflection;
+using Flecs;
 
 
 namespace ProjectMono.Maps
@@ -14,6 +15,18 @@ namespace ProjectMono.Maps
         public static void RegisterComponents(ProjectMonoApp game)
         {
             var world = game.World;
+            Assembly assembly = typeof(ProjectMonoApp).Assembly;
+            var allComponentTypes = ReflectionHelper.FindAllDerivedTypes<IComponent>(assembly);
+
+            foreach(var type in allComponentTypes)
+            {
+                typeof(World)
+                  .GetMethod("RegisterComponent")
+                  .MakeGenericMethod(type)
+                  .Invoke(world, new object[1] {null});
+            }
+            
+            /*
             world.RegisterComponent<C_Position>();
             world.RegisterComponent<C_Rotation>();
             world.RegisterComponent<C_Scale>();
@@ -35,6 +48,7 @@ namespace ProjectMono.Maps
             world.RegisterComponent<C_Sprite>();
             world.RegisterComponent<C_Color>();
             world.RegisterComponent<C_SpriteLayer>();
+            */
         }
 
         public static void RegisterSystems(ProjectMonoApp game)
@@ -62,7 +76,7 @@ namespace ProjectMono.Maps
               $"{typeof(C_Camera)}, {typeof(C_Position)}, ?{typeof(C_Rotation)}");
   
             world.RegisterSystem(S_SpriteRendering.PendSpritesForDraw, EcsPostUpdate, 
-                $"{typeof(C_Sprite)}, {typeof(C_SpriteLayer)}, {typeof(C_Position)}, ?{typeof(C_Rotation)}, ?{typeof(C_Scale)}, ?{typeof(C_Color)}");
+              $"{typeof(C_Sprite)}, {typeof(C_SpriteLayer)}, {typeof(C_Position)}, ?{typeof(C_Rotation)}, ?{typeof(C_Scale)}, ?{typeof(C_Color)}");
         }
 
     }

@@ -63,17 +63,17 @@ namespace ProjectMono.Debugging
 
                 if(ImGui.BeginChild("Entity List", new Vector2(ImGui.GetWindowWidth()-20, 0), true))
                 {
-                for (int i = 0; i < CURRENT_NUM_ENTITIES; i++)
-                {    
-                    var name = ALL_ENTITIES[i].Name();
-                    if (ImGui.Selectable((""+i).PadLeft(3, '0') + ": " + name, SELECTED_ENTITY_INDEX == i))
-                        SELECTED_ENTITY_INDEX = i;    
-                }
+                    for (int i = 0; i < CURRENT_NUM_ENTITIES; i++)
+                    {
+                        var name = ALL_ENTITIES[i].Name();
+                        if (ImGui.Selectable((""+i).PadLeft(3, '0') + ": " + name, SELECTED_ENTITY_INDEX == i))
+                            SELECTED_ENTITY_INDEX = i;    
+                    }
                 ImGui.EndChild();
                 }
                 
                 ImGui.End();
-            }    
+            }
         }
     }
 }
