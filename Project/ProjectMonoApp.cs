@@ -58,8 +58,7 @@ namespace ProjectMono.Core {
             Camera.Zoom=0.5f;
             
             PrimitiveDrawer.Initialize(this);
-            //IMGUI init
-            DebuggerManager.Initialize(out m_IMGUI, this);
+            Debugging.MonoDebugger.Initialize(out m_IMGUI, this);
             base.Initialize();
         }
 
@@ -128,7 +127,7 @@ namespace ProjectMono.Core {
 
             InputManager.Tick(gameTime);
             World.Progress(deltaTime);
-            DebuggerManager.GUI_DebuggerUpdate(this, deltaTime);
+            Debugging.MonoDebugger.GUI_DebuggerUpdate(this, deltaTime);
             InputManager.LateTick();
 
             base.Update(gameTime);
@@ -140,7 +139,7 @@ namespace ProjectMono.Core {
 
             GraphicsDevice.Clear(Color.DarkTurquoise);
             m_IMGUI.BeforeLayout(gameTime);
-            DebuggerManager.GUI_DebuggerDraw(this, deltaTime);
+            Debugging.MonoDebugger.GUI_DebuggerDraw(this, deltaTime);
             var transformMatrix = Camera.GetViewMatrix();
             SpriteBatch.Begin(
                 SpriteSortMode.BackToFront,

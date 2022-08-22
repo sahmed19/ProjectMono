@@ -42,7 +42,7 @@ namespace ProjectMono.Maps {
 
                     Rectangle tilesetRec = new Rectangle(map.TileWidth * column, map.TileHeight * row, map.TileWidth, map.TileHeight);
 
-                    var tile = world.CreateEntity("Tile (" + x + "," + y + ")" + "[" + gid + "]");
+                    var tile = world.CreateEntity("Tile (" + x + "," + y + ") " + "[" + gid + "]");
                     tile.Set(new C_Sprite(tileset.Name, map.TileWidth, map.TileHeight).SetRectangle(tileFrame));
                     tile.Set(new C_SpriteLayer(){Anchor=SpriteAnchor.TOP_LEFT, Layer=SpriteLayer.TILEMAP});
                     tile.Set(new C_Position() {Position = new Vector2(x + xOffset, y + yOffset)});

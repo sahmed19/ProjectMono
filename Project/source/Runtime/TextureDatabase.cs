@@ -49,7 +49,7 @@ namespace ProjectMono.Graphics {
 
         public static Texture2D GetTexture(string name)
         {
-            DebuggerManager.Print(name);
+            Debugging.MonoDebugger.Print(name);
             return GetTexture(GetTextureIndex(name));
         }
 

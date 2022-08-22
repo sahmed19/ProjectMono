@@ -1,6 +1,7 @@
-using System.Diagnostics.CodeAnalysis;
+using System.Diagnostics;
 using Microsoft.Xna.Framework;
 using ProjectMono.Core;
+using ProjectMono.Debugging;
 
 public static class Settings
 {
@@ -21,8 +22,8 @@ public static class Settings
         "Borderless Windowed"
     };
     public static GraphicsSettings DEFAULT_GRAPHICS_SETTINGS = new GraphicsSettings(){
-        ResolutionID=3,
-        ScreenMode=ScreenMode.WINDOWED
+        ResolutionID=4,
+        ScreenMode=ScreenMode.WINDOWED_BORDERLESS
     };
     public static GraphicsSettings GRAPHICS_SETTINGS;
     static GraphicsSettings m_LastAppliedGraphicsSettings;
@@ -59,11 +60,10 @@ public static class Settings
     }
     public static void ApplyGraphics() {
         m_LastAppliedGraphicsSettings = GRAPHICS_SETTINGS;
-        m_Game.Window.IsBorderless = IS_BORDERLESS;
         m_Game.GraphicsDeviceManager.IsFullScreen = IS_FULLSCREEN;
-
-        m_Game.GraphicsDeviceManager.PreferredBackBufferWidth=CURRENT_RESOLUTION.Width;
-        m_Game.GraphicsDeviceManager.PreferredBackBufferHeight=CURRENT_RESOLUTION.Height;
+        m_Game.Window.IsBorderless = IS_BORDERLESS;
+        m_Game.GraphicsDeviceManager.PreferredBackBufferWidth=RESOLUTIONS[GRAPHICS_SETTINGS.ResolutionID-1].Width;
+        m_Game.GraphicsDeviceManager.PreferredBackBufferHeight=RESOLUTIONS[GRAPHICS_SETTINGS.ResolutionID-1].Height;
         m_Game.GraphicsDeviceManager.ApplyChanges();
     }
 

@@ -56,13 +56,13 @@ namespace ProjectMono.Input {
             {
                 OnPressed();
                 m_timeOfLastPress=gameTime.CurrentTime();
-                DebuggerManager.Print(Name + " was pressed at " + (float) m_timeOfLastPress, MessageType.INPUT_DEBUG);
+                MonoDebugger.Print(Name + " was pressed at " + (float) m_timeOfLastPress, MessageType.INPUT_DEBUG);
             }
             else if(WasReleasedThisFrame)
             {
                 OnReleased();
                 m_timeOfLastRelease=gameTime.CurrentTime();
-                DebuggerManager.Print(Name + " was released at " + (float) m_timeOfLastRelease, MessageType.INPUT_DEBUG);
+                MonoDebugger.Print(Name + " was released at " + (float) m_timeOfLastRelease, MessageType.INPUT_DEBUG);
             } 
             else 
                 m_pressStateElapsedTime += deltaTime;

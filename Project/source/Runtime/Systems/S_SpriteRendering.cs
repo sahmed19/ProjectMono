@@ -32,26 +32,29 @@ namespace ProjectMono.Graphics {
         public static void PendSpritesForDraw(Iterator it)
         {
 
-            bool rotationSet = false, scaleSet = false;
+            bool colSet = false, rotationSet = false, scaleSet = false;
 
             var spriteIter = it.Field<C_Sprite>(1);
             var sprLayerIter = it.Field<C_SpriteLayer>(2);
             var posIter = it.Field<C_Position>(3);
-            var rotIter = it.Field<C_Rotation>(4);
-            var scaleIter = it.Field<C_Scale>(5);
+            var colIter = it.Field<C_Color>(4);
+            var rotIter = it.Field<C_Rotation>(5);
+            var scaleIter = it.Field<C_Scale>(6);
 
-            if(it.FieldIsSet(4)) rotationSet=true;
-            if(it.FieldIsSet(5)) scaleSet=true;
+            if(it.FieldIsSet(4)) colSet=true;
+            if(it.FieldIsSet(5)) rotationSet=true;
+            if(it.FieldIsSet(6)) scaleSet=true;
 
             for(int i = 0; i < it.Count; i++)
             {
                 var sprite = spriteIter[i];
                 var sprLayer = sprLayerIter[i];
                 Vector2 pos = posIter[i].Position;
+                Color col = colSet? colIter[i].Color : Color.White;
                 float rot = rotationSet? rotIter[i].Angle : 0.0f;
                 Vector2 scl = scaleSet? scaleIter[i].Scale : Vector2.One;
 
-                bool selected = it.Entity(i).Equals(DebuggerManager.GetSelectedEntity());
+                bool selected = it.Entity(i).Equals(MonoDebugger.GetSelectedEntity());
                 if(selected)
                     SELECTED_SPRITE=NUM_SPRITES;
 
@@ -59,7 +62,7 @@ namespace ProjectMono.Graphics {
                     TextureID=sprite.TextureIndex,
                     Position=pos * WorldData.PIXELS_PER_UNIT,
                     SourceRectangle=sprite.Rectangle,
-                    Color=Color.White,
+                    Color=col,
                     Angle=rot,
                     Origin=sprLayer.GetOrigin(sprite.SpriteWidth, sprite.SpriteHeight),
                     Scale=scl,
