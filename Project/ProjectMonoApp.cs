@@ -153,8 +153,5 @@ namespace ProjectMono.Core {
             SpriteBatch.End();
             m_IMGUI.AfterLayout();
         }
-
-
     }
-
 }
